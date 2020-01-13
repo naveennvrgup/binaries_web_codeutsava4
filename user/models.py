@@ -15,7 +15,7 @@ class User(models.Model):
     addr=models.TextField()
     city=models.CharField(max_length=50)
     state=models.CharField(max_length=50)
-    dob=models.DateTimeField()
+    dob=models.DateField()
     adhaar=models.CharField(unique=True,max_length=16)
     CHOICES = (
         ('FAR', 'Farmer'),
