@@ -5,14 +5,14 @@ class Location(models.Model):
     xloc=models.FloatField()
     yloc=models.FloatField()
     def __str__(self):
-        return self.xloc
+        return str(self.xloc)+','+str(self.yloc)
 
 
 
 class User(models.Model):
     name=models.CharField(max_length=300)
     contact=models.CharField(max_length=12)
-    addr=models.TextField()
+    address=models.TextField()
     city=models.CharField(max_length=50)
     state=models.CharField(max_length=50)
     dob=models.DateField()
@@ -43,7 +43,7 @@ class Warehouse(models.Model):
                 ('PUB','Public'),)
 
     sect=models.CharField(max_length=1,choices=CHOICES )
-    fg=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
+    foodgrain=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
     Loc=models.ForeignKey(Location,on_delete=models.CASCADE)
     free=models.FloatField()
     total=models.FloatField()
