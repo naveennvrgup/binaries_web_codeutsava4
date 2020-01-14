@@ -1,13 +1,19 @@
 from django.db import models
-from transaction.models import FoodGrain
+# from transaction.models import FoodGrain
 # Create your models here.
+
+class FoodGrain(models.Model):
+    type=models.CharField(max_length=50)
+    life=models.IntegerField()
+
+    def __str__(self):
+        return self.type
+
 class Location(models.Model):
     xloc=models.FloatField()
     yloc=models.FloatField()
     def __str__(self):
         return str(self.xloc)+','+str(self.yloc)
-
-
 
 class User(models.Model):
     name=models.CharField(max_length=300)
@@ -23,7 +29,7 @@ class User(models.Model):
         ('WHO', 'Warehouse Owner'),
         ('NGO', 'NGO'),
     )
-    role=models.CharField(max_length=1,choices=CHOICES)
+    role=models.CharField(max_length=3,choices=CHOICES)
 
     def __str__(self):
         return self.name
@@ -31,7 +37,7 @@ class User(models.Model):
 
 class Farms(models.Model):
     farmer=models.ForeignKey('User',on_delete=models.CASCADE)
-    loc=models.ForeignKey(Location,on_delete=models.CASCADE)
+    location=models.ForeignKey(Location,on_delete=models.CASCADE)
 
     def __str__(self):
         return self.far
@@ -39,12 +45,13 @@ class Farms(models.Model):
 class Warehouse(models.Model):
     owner=models.ForeignKey('User',on_delete=models.CASCADE)
     CHOICES=(
-                ('PRI','Private'),
-                ('PUB','Public'),)
+                ('PVT','Private'),
+                ('PUB','Public'),
+    )
 
-    sect=models.CharField(max_length=1,choices=CHOICES )
+    sect=models.CharField(max_length=3,choices=CHOICES )
     foodgrain=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
-    Loc=models.ForeignKey(Location,on_delete=models.CASCADE)
+    location=models.ForeignKey(Location,on_delete=models.CASCADE)
     free=models.FloatField()
     total=models.FloatField()
 
