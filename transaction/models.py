@@ -29,6 +29,7 @@ class StorageTransaction(models.Model):
     quantity = models.FloatField()
     cost = models.FloatField()
     date = models.DateField( default=datetime.date.today)
+    valid = models.BooleanField(default=True)
 
     def __str__(self):
         return self.transno
@@ -72,11 +73,12 @@ class Bid(models.Model):
     buyer=models.ForeignKey(User,on_delete=models.CASCADE, related_name='bids')
     type=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
     quantity=models.FloatField()
+    nbids = models.IntegerField(default = 0)
     description=models.TextField()
     deadline=models.DateField()
 
     def __str__(self):
-        return self.tarnsno
+        return self.transno
 
 class PlaceBid(models.Model):
     bid=models.ForeignKey(Bid,on_delete=models.CASCADE)

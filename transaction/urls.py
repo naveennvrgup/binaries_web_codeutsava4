@@ -15,8 +15,13 @@ from django.urls import include, path
 
 from . import views
 urlpatterns = [
-    path('bid/', views.ActiveBidListView.as_view()),
+    path('active_bid/', views.ActiveBidListView.as_view()),
+    path('total_bid/', views.TotalBidListView.as_view()),
     path('bid/<int:pk>/', views.BidDetailView.as_view()),
+    path('placebid/', views.PlaceBidListView.as_view()),
+    path('produce/', views.ProduceListView.as_view()),
+    path('storage_transaction/', views.StorageTransactionListView.as_view()),
+    path('transaction_sale/', views.TransactionSaleListView.as_view()),
     
     
     
