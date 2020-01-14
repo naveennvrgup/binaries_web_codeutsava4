@@ -67,6 +67,7 @@ Add a completely new delivery model, with a new user role.
  
 
 class Bid(models.Model):
+    isActive = models.BooleanField(default = True)
     transno=models.CharField(max_length=50,unique=True)
     buyer=models.ForeignKey(User,on_delete=models.CASCADE, related_name='bids')
     type=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
