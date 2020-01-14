@@ -1,5 +1,5 @@
 from django.db import models
-from user.models import AppUser,Farms,Warehouse,FoodGrain
+from user.models import AppUser,Farms,Warehouse,FoodGrain,Location
 
 
 # Create your models here.
@@ -15,6 +15,7 @@ class Produce(models.Model):
     quantity=models.FloatField()
     price=models.FloatField()
     date=models.DateField()
+    location = models.OneToOneField(Location, on_delete=models.CASCADE, related_name='produce')
 
     def __str__(self):
         return self.farmer.name

@@ -12,6 +12,8 @@ class FoodGrain(models.Model):
 class Location(models.Model):
     xloc=models.FloatField()
     yloc=models.FloatField()
+    centre = models.ForeignKey('Centre',on_delete=models.CASCADE, related_name='locations')
+
     def __str__(self):
         return str(self.xloc)+','+str(self.yloc)
 
@@ -38,10 +40,10 @@ class AppUser(models.Model):
 
 class Farms(models.Model):
     farmer=models.ForeignKey('AppUser',on_delete=models.CASCADE, related_name='farms')
-    location=models.ForeignKey(Location,on_delete=models.CASCADE)
+    location=models.OneToOneField(Location,on_delete=models.CASCADE, related_name='farms')
 
     def __str__(self):
-        return self.farmer
+        return self.farmer.name
 
 class Warehouse(models.Model):
     owner=models.ForeignKey('AppUser',on_delete=models.CASCADE, related_name='warehouses')
@@ -52,9 +54,34 @@ class Warehouse(models.Model):
 
     sect=models.CharField(max_length=3,choices=CHOICES )
     foodgrain=models.ForeignKey(FoodGrain,on_delete=models.CASCADE, related_name='warehouses')
-    location=models.ForeignKey(Location,on_delete=models.CASCADE)
+    location=models.OneToOneField(Location,on_delete=models.CASCADE)
     free=models.FloatField()
     total=models.FloatField()
 
     def __str__(self):
-        return self.owner
+        return self.owner.name
+
+class Centre(models.Model):
+    cid = models.CharField(max_length=200)
+    admin = models.OneToOneField(AppUser, on_delete=models.CASCADE)
+    #area --> ????
+    #derived-> deficit fg, stats, profit
+    @property
+    def farms(self):
+        locations = self.locations
+        farms = [loc.farms for farms in locations]
+        # for loc in locations:
+        #     farms.append(loc.farms[0])
+        return farms
+
+
+    def __str__(self):
+        return self.cid
+
+class Demand(models.Model):
+    foodgrain = models.ForeignKey(FoodGrain, on_delete=models.CASCADE)
+    quantity = models.FloatField()
+    centre = models.ForeignKey(Centre, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.centre.cid)+'->'+str(self.foodgrain.type)+': '+str(self.quantity)
