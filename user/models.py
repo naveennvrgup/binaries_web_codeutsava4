@@ -40,7 +40,7 @@ class Farms(models.Model):
     location=models.ForeignKey(Location,on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.far
+        return self.farmer
 
 class Warehouse(models.Model):
     owner=models.ForeignKey('User',on_delete=models.CASCADE)
