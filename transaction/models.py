@@ -62,10 +62,11 @@ Add a completely new delivery model, with a new user role.
 
 #     def __str__(self):
 #         return self.name
-
+ 
 
 class Bid(models.Model):
     transno=models.CharField(max_length=50,unique=True)
+    isActive = models.BooleanField(default = True)
     buyer=models.ForeignKey(User,on_delete=models.CASCADE)
     type=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
     quantity=models.FloatField()
@@ -73,7 +74,7 @@ class Bid(models.Model):
     deadline=models.DateField()
 
     def __str__(self):
-        return self.buyer
+        return self.tarnsno
 
 class PlaceBid(models.Model):
     bid=models.ForeignKey(Bid,on_delete=models.CASCADE)
