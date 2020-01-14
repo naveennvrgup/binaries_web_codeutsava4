@@ -1,8 +1,22 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
-
-# from transaction.models import FoodGrain
 # Create your models here.
+
+class FoodGrain(models.Model):
+    type=models.CharField(max_length=50)
+    life=models.IntegerField()
+
+    def __str__(self):
+        return self.type
+
+class Location(models.Model):
+    xloc=models.FloatField()
+    yloc=models.FloatField()
+    centre = models.ForeignKey('Centre',on_delete=models.CASCADE, related_name='locations')
+
+    def __str__(self):
+        return str(self.xloc)+','+str(self.yloc)
 
 class User(AbstractUser):
     name=models.CharField(max_length=300)
@@ -42,14 +56,14 @@ class Location(models.Model):
 
 
 class Farms(models.Model):
-    farmer=models.ForeignKey('User',on_delete=models.CASCADE)
-    location=models.ForeignKey(Location,on_delete=models.CASCADE)
+    farmer=models.ForeignKey('User',on_delete=models.CASCADE, related_name='farms')
+    location=models.OneToOneField(Location,on_delete=models.CASCADE, related_name='farms')
 
     def __str__(self):
-        return self.far
+        return self.farmer.name
 
 class Warehouse(models.Model):
-    owner=models.ForeignKey('User',on_delete=models.CASCADE)
+    owner=models.ForeignKey('User',on_delete=models.CASCADE, related_name='warehouses')
     CHOICES=(
                 ('PVT','Private'),
                 ('PUB','Public'),
@@ -62,4 +76,29 @@ class Warehouse(models.Model):
     total_space=models.FloatField()
 
     def __str__(self):
-        return self.owner
+        return self.owner.name
+
+class Centre(models.Model):
+    cid = models.CharField(max_length=200)
+    admin = models.OneToOneField(User, on_delete=models.CASCADE)
+    #area --> ????
+    #derived-> deficit fg, stats, profit
+    @property
+    def farms(self):
+        locations = self.locations
+        farms = [loc.farms for farms in locations]
+        # for loc in locations:
+        #     farms.append(loc.farms[0])
+        return farms
+
+
+    def __str__(self):
+        return self.cid
+
+class Demand(models.Model):
+    foodgrain = models.ForeignKey(FoodGrain, on_delete=models.CASCADE)
+    quantity = models.FloatField()
+    centre = models.ForeignKey(Centre, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.centre.cid)+'->'+str(self.foodgrain.type)+': '+str(self.quantity)
