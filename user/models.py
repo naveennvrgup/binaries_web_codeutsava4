@@ -1,5 +1,5 @@
 from django.db import models
-# from transaction.models import FoodGrain
+from django.contrib.auth.models import User
 # Create your models here.
 
 class FoodGrain(models.Model):
@@ -15,8 +15,9 @@ class Location(models.Model):
     def __str__(self):
         return str(self.xloc)+','+str(self.yloc)
 
-class User(models.Model):
+class AppUser(models.Model):
     name=models.CharField(max_length=300)
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
     contact=models.CharField(max_length=12)
     address=models.TextField()
     city=models.CharField(max_length=50)
@@ -36,21 +37,21 @@ class User(models.Model):
 
 
 class Farms(models.Model):
-    farmer=models.ForeignKey('User',on_delete=models.CASCADE)
+    farmer=models.ForeignKey('AppUser',on_delete=models.CASCADE, related_name='farms')
     location=models.ForeignKey(Location,on_delete=models.CASCADE)
 
     def __str__(self):
         return self.farmer
 
 class Warehouse(models.Model):
-    owner=models.ForeignKey('User',on_delete=models.CASCADE)
+    owner=models.ForeignKey('AppUser',on_delete=models.CASCADE, related_name='warehouses')
     CHOICES=(
                 ('PVT','Private'),
                 ('PUB','Public'),
     )
 
     sect=models.CharField(max_length=3,choices=CHOICES )
-    foodgrain=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
+    foodgrain=models.ForeignKey(FoodGrain,on_delete=models.CASCADE, related_name='warehouses')
     location=models.ForeignKey(Location,on_delete=models.CASCADE)
     free=models.FloatField()
     total=models.FloatField()
