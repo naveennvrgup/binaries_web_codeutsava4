@@ -1,6 +1,29 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
 # from transaction.models import FoodGrain
 # Create your models here.
+
+class User(AbstractUser):
+    name=models.CharField(max_length=300)
+    contact=models.CharField(max_length=12)
+    address=models.TextField()
+    city=models.CharField(max_length=50)
+    state=models.CharField(max_length=50)
+    dob=models.DateField(null = True)
+    adhaar=models.CharField(unique=True,max_length=16, null = True)
+    CHOICES = (
+        ('FAR', 'Farmer'),
+        ('BUY', 'Buyer'),
+        ('WHO', 'Warehouse Owner'),
+        ('NGO', 'NGO'),
+    )
+    role=models.CharField(max_length=3,choices=CHOICES)
+
+    def __str__(self):
+        return self.name
+
+
 
 class FoodGrain(models.Model):
     type=models.CharField(max_length=50)
@@ -15,24 +38,7 @@ class Location(models.Model):
     def __str__(self):
         return str(self.xloc)+','+str(self.yloc)
 
-class User(models.Model):
-    name=models.CharField(max_length=300)
-    contact=models.CharField(max_length=12)
-    address=models.TextField()
-    city=models.CharField(max_length=50)
-    state=models.CharField(max_length=50)
-    dob=models.DateField()
-    adhaar=models.CharField(unique=True,max_length=16)
-    CHOICES = (
-        ('FAR', 'Farmer'),
-        ('BUY', 'Buyer'),
-        ('WHO', 'Warehouse Owner'),
-        ('NGO', 'NGO'),
-    )
-    role=models.CharField(max_length=3,choices=CHOICES)
 
-    def __str__(self):
-        return self.name
 
 
 class Farms(models.Model):
@@ -49,11 +55,11 @@ class Warehouse(models.Model):
                 ('PUB','Public'),
     )
 
-    sect=models.CharField(max_length=3,choices=CHOICES )
+    sector=models.CharField(max_length=3,choices=CHOICES )
     foodgrain=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
     location=models.ForeignKey(Location,on_delete=models.CASCADE)
-    free=models.FloatField()
-    total=models.FloatField()
+    free_space=models.FloatField()
+    total_space=models.FloatField()
 
     def __str__(self):
         return self.owner
