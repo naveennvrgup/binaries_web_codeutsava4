@@ -42,16 +42,18 @@ class Command(BaseCommand):
 
     def create_users(self):
         User.objects.all().delete()
+        j=-1
         for  x in self.choices:
+            j+=1
             for i in range(10):
-                name=self.oneword()+self.onenum(4)+self.oneword()
+                contact=self.onenum(10)
                 if i==0:
-                    name="ravi_"+x[0] 
+                    contact=str(1234567890+j)
                 user = User.objects.create_user(
-                    username=name,
-                    name=name,
+                    username=contact,
+                    name=self.oneword()+self.onenum(4)+self.oneword(),
                     password="password",
-                    contact=self.onenum(10),
+                    contact=contact,
                     address=lorem.sentence(),
                     city=self.oneword(),
                     state=self.oneword(),
