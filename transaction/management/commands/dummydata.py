@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 import random
 import math
 import lorem
+import datetime
 
 
 
@@ -42,10 +43,13 @@ class Command(BaseCommand):
     def create_users(self):
         User.objects.all().delete()
         for  x in self.choices:
-            for _ in range(10):
+            for i in range(10):
+                name=self.oneword()+self.onenum(4)+self.oneword()
+                if i==0:
+                    name="ravi_"+x[0] 
                 user = User.objects.create_user(
-                    username=self.oneword()+self.onenum(4)+self.oneword(),
-                    name=self.oneword()+self.onenum(3)+self.oneword(),
+                    username=name,
+                    name=name,
                     password="password",
                     contact=self.onenum(10),
                     address=lorem.sentence(),
@@ -150,17 +154,54 @@ class Command(BaseCommand):
     def create_produce(self):
         Produce.objects.all().delete()
 
-        for grain in range(200):
+        for i in range(80):
             produce=Produce.objects.create(
                 type=self.inran(self.grains),
                 farmer=self.inran(self.farmer_users),
                 grade=self.onenum(20),
                 quantity=self.onenum(5),
                 price=self.onenum(3),
-                Location=self.inran(self.locations),
+                location=self.locations[i],
             )
             self.produces.append(produce)
             print(produce)
+
+
+    bids=[]
+    def create_bid(self):
+        Bid.objects.all().delete()
+
+        for _ in range(200):
+            bid=Bid.objects.create(
+                isActive=True if int(self.onenum(1))>3 else False,
+                transno=self.oneword()+self.onenum(10)+self.oneword(),
+                buyer=self.inran(self.users),
+                type=self.inran(self.grains),
+                quantity=int(self.onenum(4)),
+                nbids=int(self.onenum(2)),
+                description=lorem.paragraph(),
+                deadline=datetime.datetime.now()+datetime.timedelta(days=int(self.onenum(2)))
+            )
+            self.bids.append(bid)
+            print(bid)
+
+    storageTransactions=[]
+    def create_storageTransactions(self):
+        StorageTransaction.objects.all().delete()
+        
+        for _ in range(200):
+            st=StorageTransaction.objects.create(
+                transno=self.oneword()+self.onenum(12),
+                warehouse=self.inran(self.warehouses),
+                farmer=self.inran(self.farmer_users),
+                produce=self.inran(self.produces),
+                quantity=int(self.onenum(3)),
+                cost=int(self.onenum(2)),
+                date=datetime.datetime.now(),
+                valid=True
+            )
+            self.storageTransactions.append(st)
+            print(st)
 
     def handle(self, *args, **options):
         self.create_users()
@@ -170,6 +211,19 @@ class Command(BaseCommand):
         self.create_farms()
         self.create_warehouse()
         self.create_demand()
-        self.produces
+        self.create_produce()
+        self.create_bid()
+        self.create_storageTransactions()
 
+        su=User.objects.create_superuser(
+            username="admin",
+            email="admin@gmail.com",
+            password="password"
+        )
+        print(su.email)
+        print()
+        print()
+        print()
+        print()
+        print("dummy data created successfully!!!")
     
