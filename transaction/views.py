@@ -41,3 +41,35 @@ class StorageTransactionListView(generics.ListCreateAPIView):
 class TransactionSaleListView(generics.ListCreateAPIView):
     queryset = TransactionSale.objects.all()
     serializer_class = TransactionSaleSerializer
+
+
+class ProduceListFilter(APIView):
+    
+    
+    def get(self, request):
+        num = request.GET['num']
+        type = request.GET['type']
+        type = FoodGrain.objects.get(id = type)
+        queryset = Produce.objects.filter(type = type)
+        ans = []
+        for i in queryset:
+            if i.quantity>int(num):
+                ans.append(i.id)
+        return Response({'produce':ans})
+
+class ApproveOrder(APIView):
+    def get(self, request, pk):
+        id_ = pk
+        obj = TransactionSale.objects.get(id = id_)
+        if obj.produce.quantity >= obj.quantity:
+            obj.approved = True
+            obj.produce.quantity-=obj.quantity
+            obj.produce.save()
+            mess = "Order Approved"
+        else:
+            obj.valid = False
+            mess = "Not Enough Produce"
+        obj.save()
+        
+        return Response({'message':mess})
+
