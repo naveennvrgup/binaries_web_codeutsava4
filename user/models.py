@@ -13,7 +13,7 @@ class FoodGrain(models.Model):
 class Location(models.Model):
     xloc=models.FloatField()
     yloc=models.FloatField()
-    centre = models.ForeignKey('Centre',on_delete=models.CASCADE, related_name='locations')
+    centre = models.ForeignKey('Centre',on_delete=models.CASCADE, related_name='locations', null = True)
 
     def __str__(self):
         return str(self.xloc)+','+str(self.yloc)
@@ -49,6 +49,7 @@ class Farms(models.Model):
         return self.farmer.name
 
 class Warehouse(models.Model):
+    name = models.CharField(max_length = 50)
     owner=models.ForeignKey('User',on_delete=models.CASCADE, related_name='warehouses')
     CHOICES=(
                 ('PVT','Private'),

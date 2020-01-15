@@ -1,6 +1,6 @@
 from django.shortcuts import render
-
-# Create your views here.
+from datetime import date
+from rest_framework.decorators import api_view
 from django.shortcuts import render
 from rest_framework import viewsets, permissions,generics
 from .models import *
@@ -69,7 +69,68 @@ class ApproveOrder(APIView):
         else:
             obj.valid = False
             mess = "Not Enough Produce"
-        obj.save()
-        
+        obj.save()        
         return Response({'message':mess})
 
+
+
+
+def gen_mess(user, arr):
+        
+        
+        if arr[0]=='report':    # type quant price grade
+            loc = Location(xloc = 0, yloc = 0)
+            loc.save()
+            type = FoodGrain.objects.get(type = arr[1])
+            prdc = Produce(
+                type = type,
+                farmer=user,
+                grade=arr[4],
+                quantity=int(arr[2]),
+                price=int(arr[3]),
+                location = loc,
+                date=date.today()
+            )
+            prdc.save()
+            message = "Produce saved"
+
+        elif arr[0] == 'store':
+            type = FoodGrain.objects.get(type = arr[1])
+            queryset = Warehouse.objects.filter(foodgrain = type , free_space__gt = int(arr[2]))
+            message=""
+            for i in queryset:
+                message+=i.name +"\n"+str(i.free_space)+"\n"+str(i.total_space)+"\n\n"
+
+        elif arr[0] == 'approve' or arr[0] == 'decline':
+            order = TransactionSale.objects.get(transno = int(arr[1]))
+            if arr[0] == 'approve':
+                order.approve = True
+                message = "Order Approved"
+            else:
+                order.approve = False
+                message = "Order Declined"
+            order.save()
+        return message
+
+
+@api_view(['GET', 'POST', ])
+def message(request):
+    contact = request.GET['contact']
+    message = request.GET['message']
+    message=message.lower()
+    user = User.objects.get(contact = contact)
+    arr = message.split(' ')
+    mess = gen_mess(user,arr)
+    print(message)
+    return Response({'message':mess})
+
+    
+
+    
+
+    
+    
+
+
+
+        
