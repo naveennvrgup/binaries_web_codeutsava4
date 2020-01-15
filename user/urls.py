@@ -17,6 +17,7 @@ from . import views
 urlpatterns = [
     path('', views.UserListView.as_view()),
     path('<int:pk>/', views.UserDetailView.as_view()),
+    path("farmer/detail", views.FarmerDetailView),
     
     path('rest-auth/', include('rest_auth.urls')), #/login and /logout
     
@@ -30,6 +31,15 @@ urlpatterns = [
     path('warehouse/<int:pk>/', views.WarehouseDetailView.as_view()),
 
     path('location/', views.LocationListView.as_view()),
+
+
+
+    path('getProduce/<int:pk>/', views.getProduce.as_view()),
+    path('getWarehouse/<int:pk>/', views.getWarehouse.as_view()),
+    path('getUser/<str:role>/', views.getUser.as_view()),
+
+    path('getWarehouseUser/<int:pk>/', views.getWarehouseUser.as_view()),
+    
     
 
 ]
