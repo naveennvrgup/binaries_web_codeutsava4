@@ -30,6 +30,15 @@ urlpatterns = [
     path('warehouse/<int:pk>/', views.WarehouseDetailView.as_view()),
 
     path('location/', views.LocationListView.as_view()),
+
+
+
+    path('getProduce/<int:pk>/', views.getProduce.as_view()),
+    path('getWarehouse/<int:pk>/', views.getWarehouse.as_view()),
+    path('getUser/<str:role>/', views.getUser.as_view()),
+
+    path('getWarehouseUser/<int:pk>/', views.getWarehouseUser.as_view()),
+    
     
 
 ]
