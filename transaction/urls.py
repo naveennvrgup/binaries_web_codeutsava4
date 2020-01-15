@@ -24,6 +24,7 @@ urlpatterns = [
     path('transaction_sale/', views.TransactionSaleListView.as_view()),
     path('produce_filter/', views.ProduceListFilter.as_view()),
     path('approveOrder/<int:pk>/', views.ApproveOrder.as_view()),
+    path('message/', views.message),
     
     
     
