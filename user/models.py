@@ -31,6 +31,8 @@ class User(AbstractUser):
         ('BUY', 'Buyer'),
         ('WHO', 'Warehouse Owner'),
         ('NGO', 'NGO'),
+        ('ADM', 'Admin'),
+        ('DVR', 'Delivery Partner'),
     )
     role=models.CharField(max_length=3,choices=CHOICES)
 
