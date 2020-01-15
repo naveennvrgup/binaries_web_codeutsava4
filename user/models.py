@@ -41,22 +41,6 @@ class User(AbstractUser):
 
 
 
-class FoodGrain(models.Model):
-    type=models.CharField(max_length=50)
-    life=models.IntegerField()
-
-    def __str__(self):
-        return self.type
-
-class Location(models.Model):
-    xloc=models.FloatField()
-    yloc=models.FloatField()
-    def __str__(self):
-        return str(self.xloc)+','+str(self.yloc)
-
-
-
-
 class Farms(models.Model):
     farmer=models.ForeignKey('User',on_delete=models.CASCADE, related_name='farms')
     location=models.OneToOneField(Location,on_delete=models.CASCADE, related_name='farms')
