@@ -7,6 +7,8 @@ from .models import *
 from .serializers import *
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated  
 
@@ -28,10 +30,16 @@ class PlaceBidListView(generics.ListCreateAPIView):
     queryset = PlaceBid.objects.all()
     serializer_class = PlaceBidSerializer
 
+@permission_classes([IsAuthenticated])
+@api_view(['get'])
+def ProduceListView(req):
 
-class ProduceListView(generics.ListCreateAPIView):
-    queryset = Produce.objects.all()
-    serializer_class = ProduceSerializer
+    queryset = req.user.produce.all()
+    obj = ProduceSerializer(queryset,many=True).data
+
+    return Response(obj)
+
+
 
 class StorageTransactionListView(generics.ListCreateAPIView):
     queryset = StorageTransaction.objects.filter(valid = True)

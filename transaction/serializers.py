@@ -1,10 +1,13 @@
 from rest_framework import serializers
 from .models import *
+from user.serializers import *
 from rest_framework import status
 from rest_framework.response import Response
 import random
 
 class BidSerializer(serializers.ModelSerializer):
+    type=FoodGrainSerializer()
+    buyer=UserSerializer()
 
     class Meta:
         model = Bid
@@ -92,6 +95,8 @@ class TransactionSaleSerializer(serializers.ModelSerializer):
 
 
 class ProduceSerializer(serializers.ModelSerializer):
+    location = LocationSerializer()
+    type=FoodGrainSerializer()
 
     class Meta:
         model = Produce

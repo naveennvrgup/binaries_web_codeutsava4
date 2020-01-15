@@ -24,9 +24,10 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
 @api_view(['get'])
 @permission_classes([IsAuthenticated])
 def FarmerDetailView(req):
-    # import pdb; pdb.set_trace()
-    print(req.user.id)
-    return Response("hello")
+
+    userObj=UserSerializer(req.user).data
+    userObj.pop("password")
+    return Response(userObj)
         
 
 

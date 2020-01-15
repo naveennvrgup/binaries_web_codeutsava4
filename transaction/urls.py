@@ -19,7 +19,7 @@ urlpatterns = [
     path('total_bid/', views.TotalBidListView.as_view()),
     path('bid/<int:pk>/', views.BidDetailView.as_view()),
     path('placebid/', views.PlaceBidListView.as_view()),
-    path('produce/', views.ProduceListView.as_view()),
+    path('produce/', views.ProduceListView),
     path('storage_transaction/', views.StorageTransactionListView.as_view()),
     path('transaction_sale/', views.TransactionSaleListView.as_view()),
     path('produce_filter/', views.ProduceListFilter.as_view()),
