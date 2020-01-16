@@ -57,6 +57,7 @@ class Warehouse(models.Model):
     )
 
     sector=models.CharField(max_length=3,choices=CHOICES )
+    price = models.FloatField(default=20000)
     foodgrain=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
     location=models.ForeignKey(Location,on_delete=models.CASCADE)
     free_space=models.FloatField()

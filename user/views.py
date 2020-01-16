@@ -108,9 +108,69 @@ class getWarehouseUser(APIView):
         queryset = StorageTransaction.objects.filter(warehouse=warehouse)
         return Response({'users':list(set([obj.farmer.id for obj in queryset]))})
 
+class findWareHouse(APIView):
+    def get(self, request, quantity, produceid):
+        produce = Produce.objects.get(id=produceid)
+        foodgrain = produce.type
+        src = produce.location 
+        warehouse = Warehouse.objects.filter(foodgrain=foodgrain).filter(total_space__gte=quantity)
+        
+        #Euclidean
+        distances = []
+        i=0
+        for w in warehouse:
+            distances.append((w.location.xloc**2+w.location.yloc**2,i))
+            i+=1
+        distances.sort()
 
+        #top 5
+        maxl = 5
+        predicted_whid = []
+        predicted_whname = []
+        predicted_dis = []
+        predicted_price = []
+        predicted_avail_storage = []
+        predicted_locx = []
+        predicted_locy = []
+        predicted_centre = []
+        predicted_owner = []
+        predicted_sector = []
+        ispresent = False
+        count=0
+        result = []
+        for d,i in distances:
+            if count>=maxl:
+                break
+            count+=1
+            predicted_whid=warehouse[i].pk
+            predicted_whname=warehouse[i].name
+            predicted_dis=d
+            predicted_price=warehouse[i].price
+            predicted_avail_storage=warehouse[i].free_space
+            predicted_owner=warehouse[i].owner.name
+            predicted_sector=warehouse[i].sector
+            predicted_locx=warehouse[i].location.xloc
+            predicted_locy=warehouse[i].location.yloc
+            predicted_centre=warehouse[i].location.centre.id
+            temp = {
+                'whid':predicted_whid,
+                'whname':predicted_whname,
+                'distance':predicted_dis,
+                'price':predicted_price,
+                'locx':predicted_locx,
+                'locy':predicted_locy,
+                'avail_storage':predicted_avail_storage,
+                'centre':predicted_centre,
+                'owner':predicted_owner,
+                'sector':predicted_sector,
+            }
+            result.append(temp)
 
+        if len(distances)>0:
+            ispresent = True
 
+        res = {'data':result,'ispresent':ispresent}
+        return Response(res)
 
 
 

@@ -8,7 +8,7 @@ from .models import Produce,StorageTransaction,TransactionSale,Bid,PlaceBid
 #admin.site.register(Prodict, ProductAdmin)
 
 class ProduceAdmin(admin.ModelAdmin):
-    list_display = ('grade', 'date', 'quantity', 'price')
+    list_display = ('id','grade', 'date', 'quantity', 'price')
 admin.site.register(Produce,ProduceAdmin)
 
 class StorageTransactionAdmin(admin.ModelAdmin):

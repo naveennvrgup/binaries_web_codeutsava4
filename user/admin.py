@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import FoodGrain, Location,User,Farms,Warehouse, Centre, Demand
 # Register your models here.
 class FoodGrainAdmin(admin.ModelAdmin):
-    list_display = ('type', 'life')
+    list_display = ('id','type', 'life')
 admin.site.register(FoodGrain,FoodGrainAdmin)
 
 class LocationAdmin(admin.ModelAdmin):
