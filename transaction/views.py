@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated  
+from rest_framework.permissions import IsAuthenticated
 
 class TotalBidListView(generics.ListCreateAPIView):
     queryset = Bid.objects.all()
@@ -52,8 +52,8 @@ class TransactionSaleListView(generics.ListCreateAPIView):
 
 
 class ProduceListFilter(APIView):
-    
-    
+
+
     def get(self, request):
         num = request.GET['num']
         type = request.GET['type']
@@ -77,15 +77,15 @@ class ApproveOrder(APIView):
         else:
             obj.valid = False
             mess = "Not Enough Produce"
-        obj.save()        
+        obj.save()
         return Response({'message':mess})
 
 
 
 
 def gen_mess(user, arr):
-        
-        
+
+
         if arr[0]=='report':    # type quant price grade
             loc = Location(xloc = 0, yloc = 0)
             loc.save()
@@ -94,8 +94,8 @@ def gen_mess(user, arr):
                 type = type,
                 farmer=user,
                 grade=arr[4],
-                quantity=int(arr[2]),
-                price=int(arr[3]),
+                quantity=float(arr[2]),
+                price=float(arr[3]),
                 location = loc,
                 date=date.today()
             )
@@ -118,7 +118,25 @@ def gen_mess(user, arr):
                 order.approve = False
                 message = "Order Declined"
             order.save()
+
+        elif arr[0]=="bid":
+            transno=Bid.objects.get(transno=arr[1])
+            bidval=PlaceBid(
+                        bid=transno,
+                        farmer=user,
+                        price=float(arr[2]),
+                        description=arr[3],
+
+
+            )
+            bidval.save()
+            message="Bid Placed Successfully"
+
         return message
+
+
+
+
 
 
 @api_view(['GET', 'POST', ])
@@ -131,14 +149,3 @@ def message(request):
     mess = gen_mess(user,arr)
     print(message)
     return Response({'message':mess})
-
-    
-
-    
-
-    
-    
-
-
-
-        
