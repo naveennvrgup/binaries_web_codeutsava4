@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated 
 from collections import defaultdict
+import math
 
 class UserListView(generics.ListCreateAPIView):
 
@@ -171,7 +172,7 @@ class findWareHouse(APIView):
             count+=1
             predicted_whid=warehouse[i].pk
             predicted_whname=warehouse[i].name
-            predicted_dis=d
+            predicted_dis=round(math.sqrt(d),2)
             predicted_price=warehouse[i].price
             predicted_avail_storage=warehouse[i].free_space
             predicted_owner=warehouse[i].owner.name
