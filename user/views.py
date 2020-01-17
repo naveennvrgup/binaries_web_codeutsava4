@@ -232,3 +232,10 @@ def delayView(req):
     import time
     time.sleep(3)
     return Response("something")
+
+
+def GraphyView(req):
+    centres = Centre.objects.all()
+    import pdb; pdb.set_trace()
+
+    return Response(True)

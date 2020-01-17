@@ -31,6 +31,7 @@ urlpatterns = [
     path('warehouse/<int:pk>/', views.WarehouseDetailView.as_view()),
 
     path('location/', views.LocationListView.as_view()),
+    path('graphy/',views.GraphyView),
 
 
 

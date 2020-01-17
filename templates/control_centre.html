@@ -33,6 +33,10 @@
     graph.newEdge(barbara, timothy, {color: '#6A4A3C'});
     graph.newEdge(dennis, bianca, {color: '#CC333F'});
     graph.newEdge(bianca, monty, {color: '#EB6841'});
+
+    jQuery(monty).mousedown(function(e){
+        console.log("monty");
+    })
     
     jQuery(function(){
       var springy = window.springy = jQuery('#springydemo').springy({
@@ -41,10 +45,14 @@
           console.log('Node selected: ' + JSON.stringify(node.data));
         }
       });
+
+      var demo = document.querySelector('#springydemo')
+      demo.setAttribute('width',window.innerWidth)
+      demo.setAttribute('height',window.innerHeight)
     });
     </script>
     
-    <canvas id="springydemo" width="640" height="480" />
+    <canvas id="springydemo" />
     </body>
     </html>
     
