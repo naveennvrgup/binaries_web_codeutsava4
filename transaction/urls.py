@@ -25,8 +25,6 @@ urlpatterns = [
     path('produce_filter/', views.ProduceListFilter.as_view()),
     path('approveOrder/<int:pk>/', views.ApproveOrder.as_view()),
     path('message/', views.message),
-    path('invoice/',views.GeneratePdf.as_view()),
-
 
 
 ]

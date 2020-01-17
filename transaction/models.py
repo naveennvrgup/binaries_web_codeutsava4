@@ -30,6 +30,7 @@ class StorageTransaction(models.Model):
     cost = models.FloatField()
     date = models.DateField( default=datetime.date.today)
     valid = models.BooleanField(default=True)
+    invoice=models.URLField(max_length=300,default="")
 
     def __str__(self):
         return self.transno
@@ -49,7 +50,7 @@ class TransactionSale(models.Model):
     warehouse = models.ForeignKey(Warehouse, blank=True, null=True, on_delete=models.CASCADE)
     quantity=models.FloatField()
     price=models.FloatField()
-    invoice=models.URLField()
+    invoice=models.URLField(max_length=300,default="")
     # dprice=models.FloatField()
 
     def __str__(self):

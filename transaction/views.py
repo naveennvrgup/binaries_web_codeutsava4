@@ -12,32 +12,6 @@ from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from transaction.utils import render_to_pdf
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-from django.http import HttpResponse
-
-
-class GeneratePdf(View): #function to GeneratePdf
-    def get(self, request, *args, **kwargs):
-        data={  #fake datas
-
-               'id':1234,
-               'buyer':'XYZ',
-               'seller':'ABC',
-               'today':datetime.date.today(),
-               'price':10000,
-               'quant':100,
-               'grain':'wheat',
-            }
-        pdf = render_to_pdf('transaction/invoice.html', data)
-        return pdf
-
-
-
-
-
-
 
 class TotalBidListView(generics.ListCreateAPIView):
     queryset = Bid.objects.all()
