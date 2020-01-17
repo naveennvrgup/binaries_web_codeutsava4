@@ -25,6 +25,7 @@ urlpatterns = [
     path('produce_filter/', views.ProduceListFilter.as_view()),
     path('approveOrder/<int:pk>/', views.ApproveOrder.as_view()),
     path('message/', views.message),
+    path('getCenterDetails/<int:pk>', views.GetCenterDetails.as_view())
     
     
     

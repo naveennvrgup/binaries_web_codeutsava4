@@ -68,12 +68,14 @@ class Warehouse(models.Model):
 class Centre(models.Model):
     cid = models.CharField(max_length=200)
     admin = models.OneToOneField(User, on_delete=models.CASCADE)
+    def_crops = models.ManyToManyField(FoodGrain, related_name="d_centre")
+    rec_crops = models.ManyToManyField(FoodGrain, related_name="r_centre")
     #area --> ????
     #derived-> deficit fg, stats, profit
     @property
     def farms(self):
         locations = self.locations
-        farms = [loc.farms for farms in locations]
+        farms = [loc.farms for loc in locations]
         # for loc in locations:
         #     farms.append(loc.farms[0])
         return farms

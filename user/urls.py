@@ -39,6 +39,8 @@ urlpatterns = [
     path('getUser/<str:role>/', views.getUser.as_view()),
 
     path('getWarehouseUser/<int:pk>/', views.getWarehouseUser.as_view()),
+
+    path('getFarmerAI/<int:pk>/', views.FarmerAI.as_view()),
     
     
 

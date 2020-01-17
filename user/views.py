@@ -108,6 +108,19 @@ class getWarehouseUser(APIView):
         return Response({'users':list(set([obj.farmer.id for obj in queryset]))})
 
 
+class FarmerAI(APIView):
+    def get(self, request, pk):
+        farmer = User.objects.get(id = pk)
+        print('a',farmer.farms.all())
+        loc = farmer.farms.all()[0].location
+        print('adarsh')
+        rec_crops = Centre.objects.get(locations = loc).rec_crops
+        def_crops = Centre.objects.get(locations = loc).def_crops
+        print(rec_crops)
+
+        return Response({'rec_crops' : [i.type for i in rec_crops.all()], 'def_crops' : [i.type for i in def_crops.all()]})
+
+    
 
 
 
