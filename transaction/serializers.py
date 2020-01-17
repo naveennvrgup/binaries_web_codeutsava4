@@ -87,10 +87,8 @@ class TransactionSaleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TransactionSale
-        fields = ['approved','type','seller','buyer','produce','warehouse' ,'quantity','price',]
+        fields='__all__'
  
-
-
 
 
 

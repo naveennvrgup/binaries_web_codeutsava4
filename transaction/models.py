@@ -75,7 +75,7 @@ class Bid(models.Model):
     buyer=models.ForeignKey(User,on_delete=models.CASCADE, related_name='bids')
     type=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
     quantity=models.FloatField()
-    nbids = models.IntegerField(default = 0)
+    nbids = models.IntegerField(default = 0) #price
     description=models.TextField()
     deadline=models.DateField()
 

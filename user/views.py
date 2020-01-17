@@ -73,6 +73,7 @@ def FoodGrainDetailView(req,pk):
     produces = []
     farmers = []
     res_quantity=defaultdict(int)
+    res_price=defaultdict(int)
     res_farmers = {}
     
     for x in FoodGrain.objects.all():
@@ -83,11 +84,13 @@ def FoodGrainDetailView(req,pk):
         for y in x:
             key=str(y.farmer.contact)
             res_quantity[key]+=y.quantity
+            res_quantity[key]=y.price
             res_farmers[key]=UserSerializer(y.farmer).data
     
     return Response([{
         'farmer':res_farmers[x],
-        'quantity':res_quantity[x]
+        'quantity':res_quantity[x],
+        'price':res_price[x]
     }for x in res_quantity])
 
 

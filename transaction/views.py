@@ -14,6 +14,25 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 import traceback
 
+@api_view(['post'])
+def PlaceOrderView(req):
+    
+    foodgrain = FoodGrain.objects.get(id=req.data['foodgrain_id'])
+    buyer = req.user 
+    farmer = User.objects.get(contact=req.data['farmer_contact'])
+    quantity = req.data['quantity']
+
+    ts = TransactionSale.objects.create(
+        type= '1',
+        seller= farmer,
+        buyer = buyer,
+        quantity = quantity,
+        price = foodgrain.price,
+    )
+    obj = TransactionSaleSerializer(ts).data
+
+    return Response(obj)
+
 class TotalBidListView(generics.ListCreateAPIView):
     queryset = Bid.objects.all()
     serializer_class = BidSerializer
@@ -27,11 +46,25 @@ class BidDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Bid.objects.all()
     serializer_class = BidSerializer
 
+@api_view(['post'])
+def CreateBidView(req):
+    type = FoodGrain.objects.filter(id=req.data['foodgrain_id'])
+    quantity = FoodGrain.objects.filter(id=req.data['quantity'])
+    nbids = FoodGrain.objects.filter(id=req.data['price'])
+    description = FoodGrain.objects.filter(id=req.data['description'])
+    deadline = datetime.datetime.now()
 
-class PlaceBidListView(generics.ListCreateAPIView):
-    queryset = PlaceBid.objects.all()
-    serializer_class = PlaceBidSerializer
+    queryset = PlaceBid.objects.create(
+        buyer = req.user,
+        type = type,
+        quantity= quantity,
+        nbids=nbids,
+        description=description,
+        deadline=deadline
+    )
 
+    return Response(BidSerializer(queryset).data)
+    
 
 
 @api_view(['get'])
@@ -144,6 +177,16 @@ class ApproveOrder(APIView):
         return Response({'message':mess})
 
 
+@api_view(['get'])
+def BuyerOrdersListView(req):
+    queryset = [x for x in req.user.sale_buyer.all()]
+    data =TransactionSaleSerializer(queryset,many=True).data
+
+    for i in range(len(queryset)):
+        data[i]['foodgraintype']=queryset[0].produce.type.type
+        data[i]['seller']=queryset[0].seller.name
+
+    return Response(data)
 
 
 def gen_mess(user, arr):
