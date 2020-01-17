@@ -39,6 +39,8 @@ class PlaceBidSerializer(serializers.ModelSerializer):
 class StorageTransactionSerializer(serializers.ModelSerializer):
 
     def create(self, valid_data):
+        warehouse = Warehouse.objects.get(id=valid_data['warehouse'])
+        produce = Produce.objects.get(id=valid_data['produce'])
         trans = StorageTransaction(
             warehouse=valid_data['warehouse'],
             farmer = valid_data['farmer'],

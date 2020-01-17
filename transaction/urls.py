@@ -31,7 +31,8 @@ urlpatterns = [
     path('produce_filter/', views.ProduceListFilter.as_view()),
     path('approveOrder/<int:pk>/', views.ApproveOrder.as_view()),
     path('message/', views.message),
-    path('getCenterDetails/<int:pk>', views.GetCenterDetails.as_view())
+    path('getCenterDetails/<int:pk>', views.GetCenterDetails.as_view()),
     path('report_produce/',views.report_produce),
+    path('storagetransaction/',views.createStorageTransaction),
     
 ]

@@ -23,7 +23,7 @@ class Produce(models.Model):
 
 #add default date
 class StorageTransaction(models.Model):
-    transno=models.CharField(max_length=50,unique=True)
+    transno=models.CharField(max_length=50,null=True, blank=True)
     warehouse=models.ForeignKey(Warehouse,on_delete=models.CASCADE)
     farmer = models.ForeignKey(User,on_delete=models.CASCADE)
     produce=models.ForeignKey(Produce,on_delete=models.CASCADE)
@@ -42,7 +42,7 @@ class TransactionSale(models.Model):
         ("2", "From Warehouse"),
         ("3", "From both"),
     )
-    transno = models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
+    transno = models.CharField(max_length=200,null=True, blank=True)
     approved=models.BooleanField(default=False)
     type=models.CharField(max_length=1,choices = CHOICES)
     seller=models.ForeignKey(User,on_delete=models.CASCADE, related_name='sale_seller')

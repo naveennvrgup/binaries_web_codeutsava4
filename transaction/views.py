@@ -97,12 +97,31 @@ def report_produce(request):
     poduceserializer = ProduceSerializer(produce).data
     return Response(poduceserializer)
 
-
-
 class StorageTransactionListView(generics.ListCreateAPIView):
     queryset = StorageTransaction.objects.filter(valid = True)
     serializer_class = StorageTransactionSerializer
 
+@api_view(['post'])
+def createStorageTransaction(request):
+    warehouse = Warehouse.objects.get(id=valid_data['warehouse'])
+    produce = Produce.objects.get(id=valid_data['produce'])
+    farmer = request.user
+    quantity = request.data['quantity']
+    cost = request.data['cost']
+    # transno = random.randint(1,1000000)
+    storagetransaction = StorageTransaction.objects.create(
+        warehouse = warehouse,
+        produce = produce,
+        farmer = farmer,
+        quantity = quantity,
+        cost = cost
+    )
+    storagetransaction.save()
+
+    data = StorageTransactionSerializer(storagetransaction).data
+    print(data)
+
+    return Response(data, status=status.HTTP_200_OK)
 
 @api_view(['get'])
 @permission_classes([IsAuthenticated])
