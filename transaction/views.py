@@ -18,7 +18,7 @@ import traceback
 def PlaceOrderView(req):
     
     foodgrain = FoodGrain.objects.get(id=req.data['foodgrain_id'])
-    buyer = req.user 
+    buyer = req.user
     farmer = User.objects.get(contact=req.data['farmer_contact'])
     quantity = req.data['quantity']
 
@@ -27,6 +27,7 @@ def PlaceOrderView(req):
         seller= farmer,
         buyer = buyer,
         quantity = quantity,
+        foodgrain = foodgrain,
         price = foodgrain.price,
     )
     obj = TransactionSaleSerializer(ts).data
@@ -183,7 +184,19 @@ def BuyerOrdersListView(req):
     data =TransactionSaleSerializer(queryset,many=True).data
 
     for i in range(len(queryset)):
-        data[i]['foodgraintype']=queryset[0].produce.type.type
+        data[i]['foodgraintype']=queryset[0].foodgrain.type
+        data[i]['seller']=queryset[0].seller.name
+
+    return Response(data)
+
+
+@api_view(['get'])
+def FarmerOrdersListView(req):
+    queryset = [x for x in req.user.sale_seller.all()]
+    data =TransactionSaleSerializer(queryset,many=True).data
+    
+    for i in range(len(queryset)):
+        data[i]['foodgraintype']=queryset[0].foodgrain.type
         data[i]['seller']=queryset[0].seller.name
 
     return Response(data)

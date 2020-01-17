@@ -21,6 +21,7 @@ urlpatterns = [
     path('placebid/', views.CreateBidView),
     path('placeOrder/',views.PlaceOrderView),
     path('buyerOrders/',views.BuyerOrdersListView),
+    path('farmerOrders/',views.FarmerOrdersListView),
     path('produce/', views.ProduceListView),
     path('storage_transaction/', views.StorageTransactionListView.as_view()),
     path('transaction_sale/', views.TransactionSaleListView),

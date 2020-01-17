@@ -48,13 +48,14 @@ class TransactionSale(models.Model):
     seller=models.ForeignKey(User,on_delete=models.CASCADE, related_name='sale_seller')
     buyer=models.ForeignKey(User,on_delete=models.CASCADE, related_name='sale_buyer')
     produce=models.ForeignKey(Produce, blank=True, null=True, on_delete=models.CASCADE)
+    foodgrain=models.ForeignKey(FoodGrain, blank=True, null=True, on_delete=models.CASCADE)
     warehouse = models.ForeignKey(Warehouse, blank=True, null=True, on_delete=models.CASCADE)
     quantity=models.FloatField()
     price=models.FloatField()
     # dprice=models.FloatField()
 
     def __str__(self):
-        return self.transno
+        return str(self.quantity) + ' ' + str(self.price)
 
 """
 Add a completely new delivery model, with a new user role.
