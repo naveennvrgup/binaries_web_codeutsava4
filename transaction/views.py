@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from django.shortcuts import render
 from rest_framework import viewsets, permissions,generics
 from .models import *
+from user.models import *
 from .serializers import *
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
@@ -11,6 +12,8 @@ from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated  
+from collections import defaultdict
+
 from rest_framework import status
 import traceback
 
@@ -262,11 +265,46 @@ def message(request):
 
     
 
+
     
 
     
     
 
+
+
+class GetCenterDetails(APIView):
+    def get(self, request, pk):
+        id_ = pk
+        centre = Centre.objects.get(id = id_)
+        loc = Location.objects.filter(centre = centre)
+        farms = [farm.id for farm in Farms.objects.all() if farm.location in loc]
+        farmers = [Farms.objects.get(id = i).farmer.id for i in farms]
+        produce = [prdc.id for prdc in Produce.objects.all() if prdc.location in loc]
+        warehouses = [warehouse.id for warehouse in Warehouse.objects.all() if warehouse.location in loc]
+        storage_transactions = [st for st in StorageTransaction.objects.all() if st.warehouse.location in loc]
+        sale_transactions = [st for st in TransactionSale.objects.all() if st.seller.id in farmers]
+        quant = defaultdict(lambda : 0)
+        storage_revenue = defaultdict(lambda : 0)
+        sale_revenue = defaultdict(lambda : 0)
+        print(produce, storage_transactions, sale_transactions)
+        for i in produce:
+            quant[Produce.objects.get(id = i).type.id]+=Produce.objects.get(id = i).quantity
+            
+        for i in storage_transactions:
+            quant[i.produce.type.id]+=i.quantity
+            storage_revenue[i.produce.type.id] += i.cost
+        for i in sale_transactions:
+            sale_revenue[i.produce.type.id] += i.price
+
+
+
+        
+            
+
+
+        
+        return Response({'farms' : farms, 'farmers' : farmers, 'produce' : produce , 'warehouses':  warehouses, 'quant' : quant, 'storage_revenue': storage_revenue, 'sale_revenue':sale_revenue})
 
 
         

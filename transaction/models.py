@@ -90,4 +90,4 @@ class PlaceBid(models.Model):
     description=models.TextField()
 
     def __str__(self):
-        return self.bid
+        return str(self.bid)
