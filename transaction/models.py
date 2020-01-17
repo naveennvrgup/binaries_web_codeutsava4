@@ -49,6 +49,7 @@ class TransactionSale(models.Model):
     warehouse = models.ForeignKey(Warehouse, blank=True, null=True, on_delete=models.CASCADE)
     quantity=models.FloatField()
     price=models.FloatField()
+    invoice=models.URLField()
     # dprice=models.FloatField()
 
     def __str__(self):
@@ -65,7 +66,7 @@ Add a completely new delivery model, with a new user role.
 
 #     def __str__(self):
 #         return self.name
- 
+
 
 class Bid(models.Model):
     isActive = models.BooleanField(default = True)

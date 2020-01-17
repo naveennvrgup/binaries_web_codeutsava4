@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Title</title>
+        <style type="text/css">
+            body {
+                font-weight: 200;
+                font-size: 20px;
+            
+            }
+            .first {
+
+                font-weight: 200;
+                text-align: center;
+                color: #007cae;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+               /* text-align: right;*/
+               padding: 10px 20px 0px 20px;
+            }
+            .title span {
+                color: #007cae;
+            }
+            .details {
+                padding: 10px 20px 0px 20px;
+                text-align: left !important;
+                /*margin-left: 40%;*/
+            }
+
+        </style>
+    </head>
+    <body>
+
+            <div class='first'  >
+                <p class='title'style="font-size: 50px;">Invoice </p>
+            </div>
+
+        <div class='details'style="padding-left: 50px">
+          <span style="font-weight:bold;">Transaction ID : </span>{{id}}<br/>
+            <span style="font-weight:bold;">Date : </span> {{today}}<br/>
+            <span style="font-weight:bold;">Bill to : </span> {{buyer}}<br/>
+            <span style="font-weight:bold;">FoodGrain : </span> {{grain}}</br>
+            <span style="font-weight:bold;">Quantity : </span> {{quant}}<br/>
+            <span style="font-weight:bold;">Price : </span> {{price}} <br/>
+
+            <br>
+            <br>
+            <br>
+              <span style="font-weight:bold;">Sold By  :</span> {{seller}} <br/>
+
+
+        </div>
+    </div>
+    </body>
+</html>
