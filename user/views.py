@@ -83,9 +83,15 @@ def FoodGrainDetailView(req,pk):
     for x in produces:
         for y in x:
             key=str(y.farmer.contact)
+            
             res_quantity[key]+=y.quantity
+            for strans in y.farmer.storagetransaction_set.filter(produce=y):
+                res_quantity[key]+=strans.quantity
+
             res_quantity[key]=y.price
             res_farmers[key]=UserSerializer(y.farmer).data
+
+        
     
     return Response([{
         'farmer':res_farmers[x],
