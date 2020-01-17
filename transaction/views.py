@@ -107,7 +107,7 @@ def createStorageTransaction(request):
     produce = Produce.objects.get(id=valid_data['produce'])
     farmer = request.user
     quantity = request.data['quantity']
-    cost = request.data['cost']
+    cost = warehouse.price
     # transno = random.randint(1,1000000)
     storagetransaction = StorageTransaction.objects.create(
         warehouse = warehouse,
