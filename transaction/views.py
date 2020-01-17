@@ -181,9 +181,9 @@ def FarmerOrdersListView(req):
     data =TransactionSaleSerializer(queryset,many=True).data
 
     for i in range(len(queryset)):
-        data[i]['foodgraintype']=queryset[0].foodgrain.type
-        data[i]['seller']=queryset[0].seller.name
-        data[i]['buyer']=queryset[0].buyer.name
+        data[i]['foodgraintype']=queryset[i].foodgrain.type
+        data[i]['seller']=queryset[i].seller.name
+        data[i]['buyer']=queryset[i].buyer.name
 
     return Response(data)
 
