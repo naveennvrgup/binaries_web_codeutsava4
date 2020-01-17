@@ -17,7 +17,7 @@ from . import views
 urlpatterns = [
     path('', views.UserListView.as_view()),
     path('<int:pk>/', views.UserDetailView.as_view()),
-    path("farmer/detail", views.FarmerDetailView),
+    path("farmer-detail/", views.FarmerDetailView),
     
     path('rest-auth/', include('rest_auth.urls')), #/login and /logout
     
@@ -25,7 +25,7 @@ urlpatterns = [
     path('farms/<int:pk>/', views.FarmsDetailView.as_view()),
 
     path('foodgrains/', views.FoodGrainListView.as_view()),
-    path('foodgrains/<int:pk>/', views.FoodGrainDetailView.as_view()),
+    path('foodgrains/<int:pk>/', views.FoodGrainDetailView),
 
     path('warehouse/', views.WarehouseListView.as_view()),
     path('warehouse/<int:pk>/', views.WarehouseDetailView.as_view()),
@@ -43,5 +43,7 @@ urlpatterns = [
     path('getFarmerAI/<int:pk>/', views.FarmerAI.as_view()),
     
     
+    path('findWarehouse/<int:produceid>/<int:quantity>', views.findWareHouse.as_view()),
+    path('notifications/', views.ListNotfications),    
 
 ]

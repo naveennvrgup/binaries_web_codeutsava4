@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 from user.models import User,Farms,Warehouse,FoodGrain,Location
 import datetime
 
@@ -14,7 +15,7 @@ class Produce(models.Model):
     grade=models.CharField(max_length=50)
     quantity=models.FloatField()
     price=models.FloatField()
-    location = models.OneToOneField(Location, on_delete=models.CASCADE, related_name='produce')
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='produce')
     date=models.DateField( default=datetime.date.today)
 
     def __str__(self):
@@ -39,20 +40,22 @@ class TransactionSale(models.Model):
     CHOICES = (
         ("1", "From Produce"),
         ("2", "From Warehouse"),
+        ("3", "From both"),
     )
-    transno = models.CharField(max_length=50,unique=True)
+    transno = models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
     approved=models.BooleanField(default=False)
     type=models.CharField(max_length=1,choices = CHOICES)
     seller=models.ForeignKey(User,on_delete=models.CASCADE, related_name='sale_seller')
     buyer=models.ForeignKey(User,on_delete=models.CASCADE, related_name='sale_buyer')
     produce=models.ForeignKey(Produce, blank=True, null=True, on_delete=models.CASCADE)
+    foodgrain=models.ForeignKey(FoodGrain, blank=True, null=True, on_delete=models.CASCADE)
     warehouse = models.ForeignKey(Warehouse, blank=True, null=True, on_delete=models.CASCADE)
     quantity=models.FloatField()
     price=models.FloatField()
     # dprice=models.FloatField()
 
     def __str__(self):
-        return self.transno
+        return str(self.quantity) + ' ' + str(self.price)
 
 """
 Add a completely new delivery model, with a new user role.
@@ -73,7 +76,7 @@ class Bid(models.Model):
     buyer=models.ForeignKey(User,on_delete=models.CASCADE, related_name='bids')
     type=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
     quantity=models.FloatField()
-    nbids = models.IntegerField(default = 0)
+    nbids = models.IntegerField(default = 0) #price
     description=models.TextField()
     deadline=models.DateField()
 

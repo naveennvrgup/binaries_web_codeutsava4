@@ -8,10 +8,34 @@ from user.models import *
 from .serializers import *
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated  
 from collections import defaultdict
 
+from rest_framework import status
+import traceback
+
+@api_view(['post'])
+def PlaceOrderView(req):
+    
+    foodgrain = FoodGrain.objects.get(id=req.data['foodgrain_id'])
+    buyer = req.user
+    farmer = User.objects.get(contact=req.data['farmer_contact'])
+    quantity = req.data['quantity']
+
+    ts = TransactionSale.objects.create(
+        type= '1',
+        seller= farmer,
+        buyer = buyer,
+        quantity = quantity,
+        foodgrain = foodgrain,
+        price = foodgrain.price,
+    )
+    obj = TransactionSaleSerializer(ts).data
+
+    return Response(obj)
 
 class TotalBidListView(generics.ListCreateAPIView):
     queryset = Bid.objects.all()
@@ -26,25 +50,123 @@ class BidDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Bid.objects.all()
     serializer_class = BidSerializer
 
+@api_view(['post'])
+def CreateBidView(req):
+    type = FoodGrain.objects.filter(id=req.data['foodgrain_id'])
+    quantity = FoodGrain.objects.filter(id=req.data['quantity'])
+    nbids = FoodGrain.objects.filter(id=req.data['price'])
+    description = FoodGrain.objects.filter(id=req.data['description'])
+    deadline = datetime.datetime.now()
 
-class PlaceBidListView(generics.ListCreateAPIView):
-    queryset = PlaceBid.objects.all()
-    serializer_class = PlaceBidSerializer
+    queryset = PlaceBid.objects.create(
+        buyer = req.user,
+        type = type,
+        quantity= quantity,
+        nbids=nbids,
+        description=description,
+        deadline=deadline
+    )
+
+    return Response(BidSerializer(queryset).data)
+    
 
 
-class ProduceListView(generics.ListCreateAPIView):
-    queryset = Produce.objects.all()
-    serializer_class = ProduceSerializer
+@api_view(['get'])
+@permission_classes([IsAuthenticated])
+def ProduceListView(req):
+
+    queryset = req.user.produce.all()
+    obj = ProduceSerializer(queryset,many=True).data
+
+    return Response(obj)
+
+@permission_classes([IsAuthenticated])
+@api_view(['post'])
+def report_produce(request):
+    farmer = request.user
+    foodgrain = FoodGrain.objects.get(id=request.data['fid'])
+    grade = request.data['grade']
+    quantity= request.data['quantity']
+    price= request.data['price']
+
+    location = farmer.farms.all()[0].location
+    print('reached')
+
+    produce = Produce.objects.create(farmer=farmer,type=foodgrain,grade=grade,quantity=quantity,location=location,price=price)
+    produce.save()
+    poduceserializer = ProduceSerializer(produce).data
+    return Response(poduceserializer)
+
+
 
 class StorageTransactionListView(generics.ListCreateAPIView):
     queryset = StorageTransaction.objects.filter(valid = True)
     serializer_class = StorageTransactionSerializer
 
 
-class TransactionSaleListView(generics.ListCreateAPIView):
-    queryset = TransactionSale.objects.all()
-    serializer_class = TransactionSaleSerializer
+@api_view(['get'])
+@permission_classes([IsAuthenticated])
+def TransactionSaleListView(req):
+    queryset = TransactionSale.objects.filter(buyer=req.user)
+    data = TransactionSaleSerializer(queryset,many=True).data
 
+    return Response(data)
+
+@api_view(['post'])
+def CreateTransactionView(req):
+    
+    try:
+        foodgrain_id=int(req.data['foodgrain_id'])
+        from_produce=int(req.data['from_produce'])
+        from_warehouse = int(req.data['from_warehouse'])
+
+        foodgrain = FoodGrain.objects.get(pk=foodgrain_id)
+        produce = foodgrain.produce.all()[0]
+        price = foodgrain.price * (from_produce + from_warehouse)
+
+        warehouse = foodgrain.warehouse_set.all()
+        warehouse = warehouse[0] if warehouse else None
+
+        produce.quantity -= from_produce
+        produce.save()
+
+        if warehouse:
+            warehouse.quantity -= from_warehouse
+            warehouse.save()
+
+        deal_type=None
+        if from_produce and from_warehouse:
+            deal_type='3'
+        elif from_produce:
+            deal_type='1'
+        else:
+            deal_type='2'
+
+
+        farmer = None
+        if produce.farmer:
+            farmer = produce.farmer
+        else:
+            farmer = warehouse.owner
+
+
+        ts = TransactionSale.objects.create(
+            type = deal_type,
+            seller = farmer,
+            buyer = req.user,
+            produce = produce,
+            warehouse = warehouse,
+            quantity= from_produce +from_warehouse,
+            price = price
+        )
+
+        data = TransactionSaleSerializer(ts).data
+
+        return Response(data, status=status.HTTP_200_OK)
+    except Exception:
+        traceback.print_exc()
+        return Response('something went bad',status=status.HTTP_400_BAD_REQUEST)
+    
 
 class ProduceListFilter(APIView):
     
@@ -76,11 +198,48 @@ class ApproveOrder(APIView):
         return Response({'message':mess})
 
 
+@api_view(['get'])
+def BuyerOrdersListView(req):
+    queryset = [x for x in req.user.sale_buyer.all()]
+    data =TransactionSaleSerializer(queryset,many=True).data
+
+    for i in range(len(queryset)):
+        data[i]['foodgraintype']=queryset[0].foodgrain.type
+        data[i]['seller']=queryset[0].seller.name
+        data[i]['buyer']=queryset[0].buyer.name
+
+    return Response(data)
+
+
+@api_view(['get'])
+def FarmerOrdersListView(req):
+    queryset = [x for x in req.user.sale_seller.all()]
+    data =TransactionSaleSerializer(queryset,many=True).data
+
+    for i in range(len(queryset)):
+        data[i]['foodgraintype']=queryset[0].foodgrain.type
+        data[i]['seller']=queryset[0].seller.name
+        data[i]['buyer']=queryset[0].buyer.name
+
+    return Response(data)
+
+@api_view(['get'])
+def ApproveFarmerOrderView(req,id):
+    obj = req.user.sale_seller.get(id=int(id))
+    obj.approved=True
+    obj.save()
+    return Response(True)
+
+
+@api_view(['get'])
+def RejectFarmerOrderView(req,id):
+    obj = req.user.sale_seller.get(id=int(id))
+    obj.approved=False
+    obj.save()
+    return Response(True)
 
 
 def gen_mess(user, arr):
-        
-        
         if arr[0]=='report':    # type quant price grade
             loc = Location(xloc = 0, yloc = 0)
             loc.save()

@@ -18,16 +18,20 @@ urlpatterns = [
     path('active_bid/', views.ActiveBidListView.as_view()),
     path('total_bid/', views.TotalBidListView.as_view()),
     path('bid/<int:pk>/', views.BidDetailView.as_view()),
-    path('placebid/', views.PlaceBidListView.as_view()),
-    path('produce/', views.ProduceListView.as_view()),
+    path('placebid/', views.CreateBidView),
+    path('placeOrder/',views.PlaceOrderView),
+    path('buyerOrders/',views.BuyerOrdersListView),
+    path('farmerOrders/',views.FarmerOrdersListView),
+    path('approveOrder/<id>/',views.ApproveFarmerOrderView),
+    path('rejectOrder/<id>/',views.RejectFarmerOrderView),
+    path('produce/', views.ProduceListView),
     path('storage_transaction/', views.StorageTransactionListView.as_view()),
-    path('transaction_sale/', views.TransactionSaleListView.as_view()),
+    path('transaction_sale/', views.TransactionSaleListView),
+    path('create_transaction_sale/', views.CreateTransactionView),
     path('produce_filter/', views.ProduceListFilter.as_view()),
     path('approveOrder/<int:pk>/', views.ApproveOrder.as_view()),
     path('message/', views.message),
     path('getCenterDetails/<int:pk>', views.GetCenterDetails.as_view())
+    path('report_produce/',views.report_produce),
     
-    
-    
-
 ]
