@@ -39,9 +39,7 @@ urlpatterns = [
     path('getUser/<str:role>/', views.getUser.as_view()),
 
     path('getWarehouseUser/<int:pk>/', views.getWarehouseUser.as_view()),
-    path('findWarehouse/<int:quantity>/<int:produceid>', views.findWareHouse.as_view()),
-
-
+    path('findWarehouse/<int:produceid>/<int:quantity>', views.findWareHouse.as_view()),
     path('notifications/', views.ListNotfications),    
 
 ]

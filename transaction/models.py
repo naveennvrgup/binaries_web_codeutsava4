@@ -15,7 +15,7 @@ class Produce(models.Model):
     grade=models.CharField(max_length=50)
     quantity=models.FloatField()
     price=models.FloatField()
-    location = models.OneToOneField(Location, on_delete=models.CASCADE, related_name='produce')
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='produce')
     date=models.DateField( default=datetime.date.today)
 
     def __str__(self):

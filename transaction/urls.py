@@ -31,8 +31,6 @@ urlpatterns = [
     path('produce_filter/', views.ProduceListFilter.as_view()),
     path('approveOrder/<int:pk>/', views.ApproveOrder.as_view()),
     path('message/', views.message),
+    path('report_produce/',views.report_produce),
     
-    
-    
-
 ]

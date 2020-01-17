@@ -135,6 +135,8 @@ class getWarehouseUser(APIView):
 
 class findWareHouse(APIView):
     def get(self, request, quantity, produceid):
+        quantity = int(quantity)
+        produceid = int(produceid)
         produce = Produce.objects.get(id=produceid)
         foodgrain = produce.type
         src = produce.location 
@@ -184,7 +186,7 @@ class findWareHouse(APIView):
                 'price':predicted_price,
                 'locx':predicted_locx,
                 'locy':predicted_locy,
-                'avail_storage':predicted_avail_storage,
+                'availstorage':predicted_avail_storage,
                 'centre':predicted_centre,
                 'owner':predicted_owner,
                 'sector':predicted_sector,

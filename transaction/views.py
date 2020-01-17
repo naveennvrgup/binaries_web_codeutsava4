@@ -77,6 +77,23 @@ def ProduceListView(req):
 
     return Response(obj)
 
+@permission_classes([IsAuthenticated])
+@api_view(['post'])
+def report_produce(request):
+    farmer = request.user
+    foodgrain = FoodGrain.objects.get(id=request.data['fid'])
+    grade = request.data['grade']
+    quantity= request.data['quantity']
+    price= request.data['price']
+
+    location = farmer.farms.all()[0].location
+    print('reached')
+
+    produce = Produce.objects.create(farmer=farmer,type=foodgrain,grade=grade,quantity=quantity,location=location,price=price)
+    produce.save()
+    poduceserializer = ProduceSerializer(produce).data
+    return Response(poduceserializer)
+
 
 
 class StorageTransactionListView(generics.ListCreateAPIView):
@@ -220,8 +237,6 @@ def RejectFarmerOrderView(req,id):
 
 
 def gen_mess(user, arr):
-        
-        
         if arr[0]=='report':    # type quant price grade
             loc = Location(xloc = 0, yloc = 0)
             loc.save()
