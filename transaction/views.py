@@ -118,10 +118,10 @@ def createStorageTransaction(request):
     )
     storagetransaction.save()
 
-    data = StorageTransactionSerializer(storagetransaction).data
-    print(data)
+    # data = StorageTransactionSerializer(storagetransaction).data
+    # print(data)
 
-    return Response(data, status=status.HTTP_200_OK)
+    return Response({"flag":True,}, status=status.HTTP_200_OK)
 
 @api_view(['get'])
 @permission_classes([IsAuthenticated])
