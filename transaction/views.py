@@ -186,6 +186,7 @@ def BuyerOrdersListView(req):
     for i in range(len(queryset)):
         data[i]['foodgraintype']=queryset[0].foodgrain.type
         data[i]['seller']=queryset[0].seller.name
+        data[i]['buyer']=queryset[0].buyer.name
 
     return Response(data)
 
@@ -194,12 +195,28 @@ def BuyerOrdersListView(req):
 def FarmerOrdersListView(req):
     queryset = [x for x in req.user.sale_seller.all()]
     data =TransactionSaleSerializer(queryset,many=True).data
-    
+
     for i in range(len(queryset)):
         data[i]['foodgraintype']=queryset[0].foodgrain.type
         data[i]['seller']=queryset[0].seller.name
+        data[i]['buyer']=queryset[0].buyer.name
 
     return Response(data)
+
+@api_view(['get'])
+def ApproveFarmerOrderView(req,id):
+    obj = req.user.sale_seller.get(id=int(id))
+    obj.approved=True
+    obj.save()
+    return Response(True)
+
+
+@api_view(['get'])
+def RejectFarmerOrderView(req,id):
+    obj = req.user.sale_seller.get(id=int(id))
+    obj.approved=False
+    obj.save()
+    return Response(True)
 
 
 def gen_mess(user, arr):
