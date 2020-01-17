@@ -183,7 +183,7 @@ class findWareHouse(APIView):
                 'price':predicted_price,
                 'locx':predicted_locx,
                 'locy':predicted_locy,
-                'avail_storage':predicted_avail_storage,
+                'availstorage':predicted_avail_storage,
                 'centre':predicted_centre,
                 'owner':predicted_owner,
                 'sector':predicted_sector,
