@@ -140,7 +140,7 @@ class findWareHouse(APIView):
         produce = Produce.objects.get(id=produceid)
         foodgrain = produce.type
         src = produce.location 
-        warehouse = Warehouse.objects.filter(foodgrain=foodgrain).filter(total_space__gte=quantity)
+        warehouse = Warehouse.objects.filter(foodgrain=foodgrain).filter(free_space__gte=quantity)
         
         #Euclidean
         distances = []

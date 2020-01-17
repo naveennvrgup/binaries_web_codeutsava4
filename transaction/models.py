@@ -33,7 +33,7 @@ class StorageTransaction(models.Model):
     valid = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.transno
+        return self.farmer.name+'-'+self.produce.type.type+'-'+str(self.quantity)
 
 
 class TransactionSale(models.Model):

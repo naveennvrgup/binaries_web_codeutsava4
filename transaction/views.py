@@ -103,8 +103,8 @@ class StorageTransactionListView(generics.ListCreateAPIView):
 
 @api_view(['post'])
 def createStorageTransaction(request):
-    warehouse = Warehouse.objects.get(id=valid_data['warehouse'])
-    produce = Produce.objects.get(id=valid_data['produce'])
+    warehouse = Warehouse.objects.get(id=request.data['warehouse'])
+    produce = Produce.objects.get(id=request.data['produce'])
     farmer = request.user
     quantity = request.data['quantity']
     cost = warehouse.price
@@ -117,6 +117,13 @@ def createStorageTransaction(request):
         cost = cost
     )
     storagetransaction.save()
+
+    produce.quantity -= quantity
+    produce.save()
+
+    warehouse.free_space -= quantity
+    warehouse.save()
+    print('saved')
 
     # data = StorageTransactionSerializer(storagetransaction).data
     # print(data)
