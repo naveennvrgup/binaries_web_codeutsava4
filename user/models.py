@@ -51,7 +51,6 @@ class Farms(models.Model):
         return self.farmer.name
 
 class Warehouse(models.Model):
-    trans_id=models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
     name = models.CharField(max_length = 50)
     owner=models.ForeignKey('User',on_delete=models.CASCADE, related_name='warehouses')
     CHOICES=(
