@@ -207,3 +207,9 @@ def ListNotfications(req):
 
     return Response(obj.data)
     
+
+@api_view(['get'])
+def delayView(req):
+    import time
+    time.sleep(3)
+    return Response("something")

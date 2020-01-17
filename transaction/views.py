@@ -109,61 +109,6 @@ def TransactionSaleListView(req):
 
     return Response(data)
 
-@api_view(['post'])
-def CreateTransactionView(req):
-    
-    try:
-        foodgrain_id=int(req.data['foodgrain_id'])
-        from_produce=int(req.data['from_produce'])
-        from_warehouse = int(req.data['from_warehouse'])
-
-        foodgrain = FoodGrain.objects.get(pk=foodgrain_id)
-        produce = foodgrain.produce.all()[0]
-        price = foodgrain.price * (from_produce + from_warehouse)
-
-        warehouse = foodgrain.warehouse_set.all()
-        warehouse = warehouse[0] if warehouse else None
-
-        produce.quantity -= from_produce
-        produce.save()
-
-        if warehouse:
-            warehouse.quantity -= from_warehouse
-            warehouse.save()
-
-        deal_type=None
-        if from_produce and from_warehouse:
-            deal_type='3'
-        elif from_produce:
-            deal_type='1'
-        else:
-            deal_type='2'
-
-
-        farmer = None
-        if produce.farmer:
-            farmer = produce.farmer
-        else:
-            farmer = warehouse.owner
-
-
-        ts = TransactionSale.objects.create(
-            type = deal_type,
-            seller = farmer,
-            buyer = req.user,
-            produce = produce,
-            warehouse = warehouse,
-            quantity= from_produce +from_warehouse,
-            price = price
-        )
-
-        data = TransactionSaleSerializer(ts).data
-
-        return Response(data, status=status.HTTP_200_OK)
-    except Exception:
-        traceback.print_exc()
-        return Response('something went bad',status=status.HTTP_400_BAD_REQUEST)
-    
 
 class ProduceListFilter(APIView):
     
@@ -220,19 +165,51 @@ def FarmerOrdersListView(req):
 
     return Response(data)
 
-@api_view(['get'])
+@api_view(['post'])
 def ApproveFarmerOrderView(req,id):
-    obj = req.user.sale_seller.get(id=int(id))
-    obj.approved=True
-    obj.save()
+    tsale = req.user.sale_seller.get(id=int(id))
+    get_from = req.data['get_from']
+    quanity_to_delete = tsale.quantity
+
+    produce = req.user.produce.all()
+    produce = produce[0] if produce else None
+
+    strans = req.user.storagetransaction_set.all()
+    strans = strans[0] if  strans else None
+
+    if get_from=='produce' and produce:
+        tsale.produce = produce
+        temp = min(produce.quantity,quanity_to_delete)
+        quanity_to_delete -= temp
+        produce.quantity -= temp
+        produce.save()
+
+        if quanity_to_delete and warehouse:
+            strans.quantity -= quanity_to_delete
+            strans.save()
+
+    elif strans:
+        tsale.warehouse = strans.warehouse
+        temp = min(strans.quantity,quanity_to_delete)
+        quanity_to_delete -= temp
+        strans.quantity -= temp
+        strans.save()
+
+        if quanity_to_delete and produce:
+            produce.quantity -= quanity_to_delete
+            produce.save()
+
+
+    tsale.approved=True
+    tsale.save()
+
+
     return Response(True)
 
 
 @api_view(['get'])
 def RejectFarmerOrderView(req,id):
-    obj = req.user.sale_seller.get(id=int(id))
-    obj.approved=False
-    obj.save()
+    req.user.sale_seller.get(id=int(id)).delete()
     return Response(True)
 
 

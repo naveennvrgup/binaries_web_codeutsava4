@@ -42,4 +42,6 @@ urlpatterns = [
     path('findWarehouse/<int:produceid>/<int:quantity>', views.findWareHouse.as_view()),
     path('notifications/', views.ListNotfications),    
 
+    path('delay/',views.delayView),
+
 ]
