@@ -93,3 +93,13 @@ class Demand(models.Model):
 
     def __str__(self):
         return str(self.centre.cid)+'->'+str(self.foodgrain.type)+': '+str(self.quantity)
+
+
+class Notifications(models.Model):
+    msg = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+    seen = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '{} {} {} '.format( user,msg,seen)

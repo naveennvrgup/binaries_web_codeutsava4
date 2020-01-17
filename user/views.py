@@ -195,6 +195,10 @@ class findWareHouse(APIView):
         return Response(res)
 
 
+@api_view(['get'])
+def ListNotfications(req):
+    queryset = Notifications.objects.filter(user = req.user)
+    obj = NotificationSerializer(queryset,many=True)
 
-
-
+    return Response(obj.data)
+    
