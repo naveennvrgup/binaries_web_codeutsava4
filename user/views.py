@@ -8,7 +8,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated  
+from rest_framework.permissions import IsAuthenticated 
+from collections import defaultdict
 
 class UserListView(generics.ListCreateAPIView):
 
@@ -66,9 +67,30 @@ class FoodGrainListView(generics.ListCreateAPIView):
 
 
 
-class FoodGrainDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = FoodGrain.objects.all()
-    serializer_class = FoodGrainSerializer
+@api_view(['get'])
+def FoodGrainDetailView(req,pk):
+    foodgrains = []
+    produces = []
+    farmers = []
+    res_quantity=defaultdict(int)
+    res_farmers = {}
+    
+    for x in FoodGrain.objects.all():
+        produces.append(x.produce.all())
+
+    
+    for x in produces:
+        for y in x:
+            key=str(y.farmer.contact)
+            res_quantity[key]+=y.quantity
+            res_farmers[key]=UserSerializer(y.farmer).data
+    
+    return Response([{
+        'farmer':res_farmers[x],
+        'quantity':res_quantity[x]
+    }for x in res_quantity])
+
+
 
 
 class LocationListView(generics.ListCreateAPIView):
@@ -175,6 +197,10 @@ class findWareHouse(APIView):
         return Response(res)
 
 
+@api_view(['get'])
+def ListNotfications(req):
+    queryset = Notifications.objects.filter(user = req.user)
+    obj = NotificationSerializer(queryset,many=True)
 
-
-
+    return Response(obj.data)
+    

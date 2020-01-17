@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
 # Create your models here.
@@ -6,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 class FoodGrain(models.Model):
     type=models.CharField(max_length=50)
     life=models.IntegerField()
+    price=models.IntegerField(default=17) 
 
     def __str__(self):
         return self.type
@@ -49,6 +51,7 @@ class Farms(models.Model):
         return self.farmer.name
 
 class Warehouse(models.Model):
+    trans_id=models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
     name = models.CharField(max_length = 50)
     owner=models.ForeignKey('User',on_delete=models.CASCADE, related_name='warehouses')
     CHOICES=(
@@ -90,3 +93,13 @@ class Demand(models.Model):
 
     def __str__(self):
         return str(self.centre.cid)+'->'+str(self.foodgrain.type)+': '+str(self.quantity)
+
+
+class Notifications(models.Model):
+    msg = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+    seen = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '{} {} {} '.format( user,msg,seen)

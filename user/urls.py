@@ -25,7 +25,7 @@ urlpatterns = [
     path('farms/<int:pk>/', views.FarmsDetailView.as_view()),
 
     path('foodgrains/', views.FoodGrainListView.as_view()),
-    path('foodgrains/<int:pk>/', views.FoodGrainDetailView.as_view()),
+    path('foodgrains/<int:pk>/', views.FoodGrainDetailView),
 
     path('warehouse/', views.WarehouseListView.as_view()),
     path('warehouse/<int:pk>/', views.WarehouseDetailView.as_view()),
@@ -39,7 +39,7 @@ urlpatterns = [
     path('getUser/<str:role>/', views.getUser.as_view()),
 
     path('getWarehouseUser/<int:pk>/', views.getWarehouseUser.as_view()),
-    path('findWarehouse/<int:produceid>/<int:quantity>', views.findWareHouse.as_view())
-    
+    path('findWarehouse/<int:produceid>/<int:quantity>', views.findWareHouse.as_view()),
+    path('notifications/', views.ListNotfications),    
 
 ]

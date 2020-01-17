@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 from user.models import User,Farms,Warehouse,FoodGrain,Location
 import datetime
 
@@ -39,8 +40,9 @@ class TransactionSale(models.Model):
     CHOICES = (
         ("1", "From Produce"),
         ("2", "From Warehouse"),
+        ("3", "From both"),
     )
-    transno = models.CharField(max_length=50,unique=True)
+    transno = models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
     approved=models.BooleanField(default=False)
     type=models.CharField(max_length=1,choices = CHOICES)
     seller=models.ForeignKey(User,on_delete=models.CASCADE, related_name='sale_seller')

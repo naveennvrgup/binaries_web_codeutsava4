@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from user.models import User, Farms, Warehouse, Location , FoodGrain
+from user.models import *
 from rest_framework import status
 from rest_framework.response import Response
 import random
@@ -26,7 +26,10 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['name','password', 'contact','address','city','state','dob','adhaar', 'role']
        
-
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notifications
+        fields = '__all__'
 
 
 class FarmsSerializer(serializers.ModelSerializer):
