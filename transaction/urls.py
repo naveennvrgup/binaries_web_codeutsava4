@@ -42,7 +42,8 @@ urlpatterns = [
     path('farmerPlacedBids/', views.FarmerPlacedbids),
     path('farmerPlaceBid/', views.FarmerPlaceBid),
     path('approveBid/pk', views.ApproveBid),
-    path('farmerResponseBideList/pk',views.FarmerResponseBidList)
+    path('farmerResponseBideList/pk',views.FarmerResponseBidList),
+    path('DefCentreView/',views.DefCentreView.as_view())
 
     
 ]

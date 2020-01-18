@@ -222,7 +222,7 @@ class findWareHouse(APIView):
 
 class FarmerAI(APIView):
     def get(self, request, pk):
-        farmer = User.objects.get(id = pk)
+        farmer = request.user
         print('a',farmer.farms.all())
         loc = farmer.farms.all()[0].location
         print('adarsh')

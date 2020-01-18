@@ -41,7 +41,7 @@ urlpatterns = [
 
     path('getWarehouseUser/<int:pk>/', views.getWarehouseUser.as_view()),
 
-    path('getFarmerAI/<int:pk>/', views.FarmerAI.as_view()),
+    path('getFarmerAI/', views.FarmerAI.as_view()),
     
     
     path('findWarehouse/<int:produceid>/<int:quantity>', views.findWareHouse.as_view()),
