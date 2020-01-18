@@ -9,8 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated 
-from collections import defaultdict
+from collections import defaultdict, Counter
 import math
+
 
 class UserListView(generics.ListCreateAPIView):
 
@@ -309,6 +310,24 @@ def GraphyView(req):
 
         
             
+
+
+class PotentialBuyers(APIView):
+    def get(self, request, type):
+        type = FoodGrain.objects.get(type = type)
+        trans = TransactionSale.objects.filter(type = type)
+        users = []
+        for tran in trans:
+            users.append(tran.buyer)
+        
+        cnt = Counter(users)
+        users = list(set(users))
+        users.sort(key = lambda i : cnt[i], reverse = True)
+        users = [{'name':user.name, "num": user.contact} for user in users]
+        return Response({'users':users})
+        
+
+
 
 
 
