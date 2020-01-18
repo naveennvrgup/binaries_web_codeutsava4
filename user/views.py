@@ -245,18 +245,18 @@ def GraphyView(req):
     user_list = []
     centre_list = []
     warehouse_list = []
-    print('a')
+    # print('a')
 
     for i in users:
         user_list.append(i.name)
     for i in centres:
-        centre_list.append("Center - " + str(i.id))
+        centre_list.append("Center : " + str(i.id))
     for i in warehouses:
         warehouse_list.append(i.name)
     for i in farms:
         farms_list.append("Farm : "+str(i.id))
 
-    print('a')
+    # print('a')
     
     labels = set(user_list + centre_list + warehouse_list + farms_list)
 
@@ -264,14 +264,14 @@ def GraphyView(req):
     farm_farmer = []
     centre_farmer = []
     farmer_warehouse = []
-    print('a')
+    # print('a')
     for centre in centres:
         dic = {'farms' : [], 'farmers' : [], 'warehouses' : [] }
         far_list =[]
-        print('a')
+        # print('a')
         loc = Location.objects.filter(centre = centre)
         farms_ = []
-        print('b')
+        # print('b')
         for loc_i in loc:
             f = []
             for i in farms:
@@ -279,7 +279,7 @@ def GraphyView(req):
                     f.append(i)
             for ff in f:
                 farms_.append(ff)
-                print('d')
+                # print('d')
         farmers_ = []
         for farm in farms_:
             farmers_.append(farm.farmer.name)
