@@ -34,7 +34,7 @@ class StorageTransaction(models.Model):
     invoice=models.URLField(max_length=300,default="")
 
     def __str__(self):
-        return self.farmer.name + '-'+self.produce.type.type+'-'+str(self.quantity)
+        return self.farmer.name+'-'+self.produce.type.type+'-'+str(self.quantity)
 
 
 class TransactionSale(models.Model):

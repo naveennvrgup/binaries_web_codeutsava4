@@ -17,6 +17,8 @@ from collections import defaultdict
 
 from rest_framework import status
 import traceback
+import http 
+from decouple import config
 
 @api_view(['post'])
 def PlaceOrderView(req):
@@ -35,6 +37,8 @@ def PlaceOrderView(req):
         price = foodgrain.price,
     )
     obj = TransactionSaleSerializer(ts).data
+    message = buyer.name+ " wants to buy "+str(2)+"kg of "+foodgrain.type+" from you. Contact- "+str(buyer.contact) 
+    send_sms(farmer.contact, message)
 
     return Response(obj)
 
@@ -104,20 +108,28 @@ class StorageTransactionListView(generics.ListCreateAPIView):
 
 @api_view(['post'])
 def createStorageTransaction(request):
-    warehouse = Warehouse.objects.get(id=valid_data['warehouse'])
-    produce = Produce.objects.get(id=valid_data['produce'])
+    warehouse = Warehouse.objects.get(id=request.data['warehouse'])
+    produce = Produce.objects.get(id=request.data['produce'])
     farmer = request.user
     quantity = request.data['quantity']
-    cost = request.data['cost']
+    cost = warehouse.price
     # transno = random.randint(1,1000000)
     storagetransaction = StorageTransaction.objects.create(
         warehouse = warehouse,
         produce = produce,
         farmer = farmer,
         quantity = quantity,
-        cost = cost
+        cost = cost,
+        farmerprice = produce.price
     )
     storagetransaction.save()
+
+    produce.quantity -= quantity
+    produce.save()
+
+    warehouse.free_space -= quantity
+    warehouse.save()
+    print('saved')
 
     # data = StorageTransactionSerializer(storagetransaction).data
     # print(data)
@@ -237,40 +249,47 @@ def RejectFarmerOrderView(req,id):
 
 
 def gen_mess(user, arr):
-        if arr[0]=='report':    # type quant price grade
-            loc = Location(xloc = 0, yloc = 0)
-            loc.save()
-            type = FoodGrain.objects.get(type = arr[1])
-            prdc = Produce(
-                type = type,
-                farmer=user,
-                grade=arr[4],
-                quantity=float(arr[2]),
-                price=float(arr[3]),
-                location = loc,
-                date=date.today()
-            )
-            prdc.save()
-            message = "Produce saved"
+    print(arr)
+    if arr[0]=='report':    # type quant price grade
+        loc = Location(xloc = 0, yloc = 0)
+        loc.save()
+        type = FoodGrain.objects.get(type = arr[1])
+        prdc = Produce(
+            type = type,
+            farmer=user,
+            grade=arr[4],
+            quantity=int(arr[2]),
+            price=int(arr[3]),
+            location = loc,
+            date=date.today()
+        )
+        prdc.save()
+        message = "Produce saved"
 
-        elif arr[0] == 'store':
-            type = FoodGrain.objects.get(type = arr[1])
-            queryset = Warehouse.objects.filter(foodgrain = type , free_space__gt = int(arr[2]))
-            message=""
+    elif arr[0] == 'store':
+        type = FoodGrain.objects.get(type = arr[1])
+        queryset = Warehouse.objects.filter(foodgrain = type , free_space__gt = int(arr[2]))
+        message=""
+        for i in queryset:
+            message+=i.name +"-"+str(i.free_space)+"-"+str(i.total_space)+"--"  
+
+    elif arr[0] == 'approve' or arr[0] == 'decline':
+        order = TransactionSale.objects.get(transno = int(arr[1]))
+        if arr[0] == 'approve':
+            order.approve = True
+            message = "Order Approved"
+        else:
+            order.approve = False
+            message = "Order Declined"
+        order.save()
+
+    elif arr[0]=="getbid":
+            queryset = Bid.objects.all()
+            message = ''
             for i in queryset:
-                message+=i.name +"\n"+str(i.free_space)+"\n"+str(i.total_space)+"\n\n"
+                message += str(i.transno) + "--" + i.type.type + "--"+str(i.quantity) +"--"+i.description
 
-        elif arr[0] == 'approve' or arr[0] == 'decline':
-            order = TransactionSale.objects.get(transno = int(arr[1]))
-            if arr[0] == 'approve':
-                order.approve = True
-                message = "Order Approved"
-            else:
-                order.approve = False
-                message = "Order Declined"
-            order.save()
-
-        elif arr[0]=="bid":
+    elif arr[0]=="bid":
             transno=Bid.objects.get(transno=arr[1])
             bidval=PlaceBid(
                         bid=transno,
@@ -283,19 +302,54 @@ def gen_mess(user, arr):
             bidval.save()
             message="Bid Placed Successfully"
 
-        return message
+    elif arr[0] == "weather":
+            message = "Weather report for following Month : Mostly Sunny , Expected light showers on 5,6 and 7 February"
 
+    else:
+        message = "PLease follow the standard format"
 
-@api_view(['GET', 'POST', ])
-def message(request):
-    contact = request.GET['contact']
-    message = request.GET['message']
-    message=message.lower()
-    user = User.objects.get(contact = contact)
-    arr = message.split(' ')
-    mess = gen_mess(user,arr)
     print(message)
-    return Response({'message':mess})
+    return message
+
+
+# def send_message_msg91api(contact, message, **kwargs):
+#     # otp = str(randint(1000, 9999))
+#     # if 'otp' in kwargs:
+#     #     otp = kwargs['otp']
+#     # message = "Your OTP for E-Cell NIT Raipur portal is {}.".format(otp)
+#     conn = http.client.HTTPSConnection("api.msg91.com")
+#     contact = str(contact)
+#     authkey = config('atkey')
+#     url = "https://api.msg91.com/api/sendhttp.php?mobiles={}&authkey={}&route=4&sender=BINARY&message={}&country=91".format(
+#         contact, authkey, message)
+#     print(url)
+#     conn.request("GET", url)
+#     res = conn.getresponse()
+#     print(res)
+    # data = res.read()
+    # return otp
+
+from transaction.sms import send_sms
+
+@api_view(['POST'])
+def message(request):
+    contact = request.data['contact']
+    message = request.data['message']
+    newcontact = contact[3:]
+    print(contact, message)
+    message=message.lower()
+    try:
+        user = User.objects.get(contact = newcontact)
+    except:
+        message = "Rishabh's private message"
+        print("Rishabh's private message")
+    else:
+        arr = message.split(' ')
+        mess = gen_mess(user,arr)
+        send_sms(newcontact,mess)
+        print(user)
+        print(message)
+    return Response({'message':message})
 
 
 class GetCenterDetails(APIView):

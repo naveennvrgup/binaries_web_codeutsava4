@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated 
 from collections import defaultdict
+import math
 
 class UserListView(generics.ListCreateAPIView):
 
@@ -71,33 +72,47 @@ class FoodGrainListView(generics.ListCreateAPIView):
 def FoodGrainDetailView(req,pk):
     foodgrains = []
     produces = []
+    warehouses = []
     farmers = []
     res_quantity=defaultdict(int)
     res_price=defaultdict(int)
     res_farmers = {}
     
-    for x in FoodGrain.objects.all():
-        produces.append(x.produce.all())
+    currfoodgrain = FoodGrain.objects.get(id=pk)
+    produces = Produce.objects.filter(type = currfoodgrain)
+    warehouses = Warehouse.objects.filter(foodgrain=currfoodgrain)
+
+    result = []
+
+    for produce in produces:
+        temp = {}
+        farmer = produce.farmer
+        quantity = produce.quantity
+        farmerwarehouse = StorageTransaction.objects.filter(produce = produce)
+        for fw in farmerwarehouse:
+            quantity+= fw.quantity
+        price = produce.price
+        temp['farmer'] = UserSerializer(farmer).data
+        temp['quantity'] = quantity
+        temp['price'] = price
+        result.append(temp)
+
+    return Response(result)
+
 
     
-    for x in produces:
-        for y in x:
-            key=str(y.farmer.contact)
-            
-            res_quantity[key]+=y.quantity
-            for strans in y.farmer.storagetransaction_set.filter(produce=y):
-                res_quantity[key]+=strans.quantity
-
-            res_price[key]=y.price
-            res_farmers[key]=UserSerializer(y.farmer).data
-
-        
+    # for x in produces:
+    #     for y in x:
+    #         key=str(y.farmer.contact)
+    #         res_quantity[key]+=y.quantity
+    #         res_quantity[key]=y.price
+    #         res_farmers[key]=UserSerializer(y.farmer).data
     
-    return Response([{
-        'farmer':res_farmers[x],
-        'quantity':res_quantity[x],
-        'price':res_price[x]
-    }for x in res_quantity])
+    # return Response([{
+    #     'farmer':res_farmers[x],
+    #     'quantity':res_quantity[x],
+    #     'price':res_price[x]
+    # }for x in res_quantity])
 
 
 
@@ -146,7 +161,7 @@ class findWareHouse(APIView):
         produce = Produce.objects.get(id=produceid)
         foodgrain = produce.type
         src = produce.location 
-        warehouse = Warehouse.objects.filter(foodgrain=foodgrain).filter(total_space__gte=quantity)
+        warehouse = Warehouse.objects.filter(foodgrain=foodgrain).filter(free_space__gte=quantity)
         
         #Euclidean
         distances = []
@@ -177,7 +192,7 @@ class findWareHouse(APIView):
             count+=1
             predicted_whid=warehouse[i].pk
             predicted_whname=warehouse[i].name
-            predicted_dis=d
+            predicted_dis=round(math.sqrt(d),2)
             predicted_price=warehouse[i].price
             predicted_avail_storage=warehouse[i].free_space
             predicted_owner=warehouse[i].owner.name
