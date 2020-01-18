@@ -47,6 +47,7 @@ urlpatterns = [
 
     ##############
     path('getFarmerStoredWarehouse', views.get_farmer_storage_warehouse),
+    path('DefCentreView/',views.DefCentreView.as_view())
 
     
 ]

@@ -3,7 +3,7 @@
     <style>
         .grey-bg{
             background: #ccc;
-            min-height: 100vh;
+            /* min-height: 100vh; */
         }
         .full-w{
             width: 100vw;
@@ -12,12 +12,13 @@
 </head>
 <body>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="adarsh.css">
         <nav class="navbar navbar-dark bg-dark text-center">
             <div class="d-flex justify-content-between">
                     <div class="text-center">
                         <a class="navbar-brand" href="#">
-                            Team-binaries (Centre-4 Admin) [ Web dashboard ]
+                            Team-binaries (Centre Admin) [ Web dashboard ]
                         </a>
                     </div>
                     <div>
@@ -30,22 +31,99 @@
                     <canvas id="springydemo" />
             </div>
             <div class="col-3 grey-bg">
+
                 <h3 class="text-center my-3 font-weight-bold">Notifications:</h3>
-                <div class="alert alert-warning">Wheat deficiency alert on centre 3</div>
+                <div class="alert alert-warning" id ="myBtn">Wheat deficiency alert on centre 3</div>
                 <div class="alert alert-danger">Cyclone alert on centre 2</div>
                 <div class="alert alert-primary">Surplus wheat notification from centre 1</div>
-                <div class="alert alert-warning">Apple deficiency alert on centre 5</div>
                 <div class="alert alert-warning">Rice deficieny in centre 1</div>
                 <div class="alert alert-default">.....fetching updates from the server 
                     <div class="spinner-border" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
                 </div>
-                <div class="font-weight-bold">Send centre updates:</div>
-                <textarea name="" class="w-100" rows="3"></textarea>
-                <div class="text-center">
-                    <button class="btn btn-success">Send</button>
-                </div>
+                
+                
+            </div>
+        </div>
+
+        <div class = "jumbotron">
+            <div class = "flex-container">
+                <div class="w3-card-4 alert alert-warning" id ="c1" style="width:20%">
+
+                    <div class="w3-container w3-center">
+                      <h3>Centre-1</h3>
+                    
+                
+                      <div class="w3-section">
+                        Admin : <br>
+                        Deficient Crops : <br>
+                        Surplus Crops : <br>
+                      </div>
+                        
+                      </div>
+                    </div>
+                
+                    <div class="w3-card-4 alert alert-warning" id ="c2" style="width:20%">
+
+                        <div class="w3-container w3-center">
+                          <h3>Centre-1</h3>
+                        
+                    
+                          <div class="w3-section">
+                            Admin : <br>
+                            Deficient Crops : <br>
+                            Surplus Crops : <br>
+                          </div>
+                            
+                          </div>
+                        </div>
+                    
+                        <div class="w3-card-4 alert alert-warning" id ="c3" style="width:20%">
+
+                            <div class="w3-container w3-center">
+                              <h3>Centre-1</h3>
+                            
+                        
+                              <div class="w3-section">
+                                Admin : <br>
+                                Deficient Crops : <br>
+                                Surplus Crops : <br>
+                              </div>
+                                
+                              </div>
+                            </div>
+                            <div class="w3-card-4 alert alert-warning" id ="c2" style="width:20%">
+
+                                <div class="w3-container w3-center">
+                                  <h3>Centre-1</h3>
+                                
+                            
+                                  <div class="w3-section">
+                                    Admin : <br>
+                                    Deficient Crops : <br>
+                                    Surplus Crops : <br>
+                                  </div>
+                                    
+                                  </div>
+                                </div>
+                                <div class="w3-card-4 alert alert-warning" id ="c2" style="width:20%">
+
+                                    <div class="w3-container w3-center">
+                                      <h3>Centre-1</h3>
+                                    
+                                
+                                      <div class="w3-section">
+                                        Admin : <br>
+                                        Deficient Crops : <br>
+                                        Surplus Crops : <br>
+                                      </div>
+                                        
+                                      </div>
+                                    </div>
+                        
+                          
+                    
             </div>
         </div>
 
@@ -177,6 +255,13 @@
         graph.newEdge(center_4,center_3,{color: '#ff00ff'})
         graph.newEdge(center_5,center_4,{color: '#ff00ff'})
 
+        function callapi(){
+            fetch("http://127.0.0.1:8000/transaction/DefCentreView");
+            var centre = document.getElementById("c1");
+            centre.className += "alert alert-danger";
+            document.getElementById("c3").className = "alert alert-primary";
+        }
+        document.getElementById("myBtn").addEventListener("click", callapi);
 
         // fetch('http://localhost:8000/user/graphy/')
         //     .then(d => d.json())
@@ -213,6 +298,7 @@
 
         //     })
 
+
         jQuery(function () {
             var springy = window.springy = jQuery('#springydemo').springy({
                 graph: graph,
@@ -220,6 +306,8 @@
                     console.log('Node selected: ' + JSON.stringify(node.data));
                 }
             });
+
+
 
             var demo = document.querySelector('#springydemo')
             demo.setAttribute('width', window.innerWidth-300)

@@ -309,7 +309,9 @@ Copyright (c) 2010 Dennis Hotson
     
                 // clear background
                 ctx.clearRect(s.x - boxWidth/2, s.y - boxHeight/2, boxWidth, boxHeight);
-    
+                
+                
+                
                 // fill background
                 if (selected !== null && selected.node !== null && selected.node.id === node.id) {
                     ctx.fillStyle = "#FFFFE0";
@@ -318,6 +320,7 @@ Copyright (c) 2010 Dennis Hotson
                 } else {
                     ctx.fillStyle = "#FFFFFF";
                 }
+                
                 ctx.fillRect(s.x - boxWidth/2, s.y - boxHeight/2, boxWidth, boxHeight);
     
                 if (node.data.image == undefined) {
