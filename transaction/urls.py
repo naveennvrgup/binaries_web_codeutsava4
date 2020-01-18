@@ -33,5 +33,11 @@ urlpatterns = [
     path('getCenterDetails/<int:pk>', views.GetCenterDetails.as_view()),
     path('report_produce/',views.report_produce),
     path('storagetransaction/',views.createStorageTransaction),
-    
+
+    # path('createBid/',createBidView),    
+    # path('pastBidsList/',pastBidsListView),    
+    # path('farmerActiveBidList/',farmerActiveBidListView),    
+    # path('farmerPlaceBid/',farmerPlaceBidView),    
+    # path('farmerResponseBidsList/',farmerResponseBidsListView),   
+    # path('approveBid/',approveBidView), 
 ]
