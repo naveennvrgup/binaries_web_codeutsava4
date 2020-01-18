@@ -21,6 +21,7 @@ class Location(models.Model):
         return str(self.xloc)+','+str(self.yloc)
 
 class User(AbstractUser):
+    region=models.ForeignKey('Centre',on_delete=models.CASCADE,null=True)
     name=models.CharField(max_length=300)
     contact=models.CharField(max_length=12)
     address=models.TextField()
