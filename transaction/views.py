@@ -58,7 +58,7 @@ class BidDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(['post'])
 def CreateBidView(req):
-    type = FoodGrain.objects.get(id=req.data['foodgrain_id'])
+    type = FoodGrain.objects.get(type=req.data['foodgrain'])
     quantity = req.data['quantity']
     description = req.data['description']
     deadline = datetime.datetime.now()
@@ -453,7 +453,16 @@ def ApproveBid(request, pk):
     TransactionSale(transno = transno, approved =approved, type = type, seller =seller, buyer = buyer, foodgrain = foodgrain, quantity = quantity, price = price).save()
     return Response("Transaction Done")
 
+@api_view(['post'])
+def createBid(req):
+    bid = Bid.objects.create(
+        buyer=req.user,
+        type=FoodGrain.objects.get(type=req.data['foodgrain']),
+        quantity=req.data['quantity'],
+        description=req.data['description'],
+        deadline=req.data['deadline']
+    )
 
+    obj = BidSerializer(bid)
 
-
-
+    return Response(obj.data)
