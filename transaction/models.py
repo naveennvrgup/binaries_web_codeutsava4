@@ -29,6 +29,7 @@ class StorageTransaction(models.Model):
     produce=models.ForeignKey(Produce,on_delete=models.CASCADE)
     quantity = models.FloatField()
     cost = models.FloatField()
+    farmerprice = models.FloatField(null=True, blank=True)
     date = models.DateField( default=datetime.date.today)
     valid = models.BooleanField(default=True)
     invoice=models.URLField(max_length=300,default="")

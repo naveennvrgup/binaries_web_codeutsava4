@@ -271,7 +271,7 @@ def gen_mess(user, arr):
         queryset = Warehouse.objects.filter(foodgrain = type , free_space__gt = int(arr[2]))
         message=""
         for i in queryset:
-            message+=i.name +"-"+str(i.free_space)+"-"+str(i.total_space)+"--"  
+            message+=i.name +"\\n"+str(i.free_space)+"\\n"+str(i.total_space)+"\\n\\n"  
 
     elif arr[0] == 'approve' or arr[0] == 'decline':
         order = TransactionSale.objects.get(transno = int(arr[1]))
@@ -283,11 +283,13 @@ def gen_mess(user, arr):
             message = "Order Declined"
         order.save()
 
-    elif arr[0]=="getbid":
+    elif arr[0]=="getbid" or arr[0] =="किसान":
             queryset = Bid.objects.all()
-            message = ''
-            for i in queryset:
-                message += str(i.transno) + "--" + i.type.type + "--"+str(i.quantity) +"--"+i.description
+            # message = ''
+            # for i in queryset:
+                # message += str(i.transno) + "\\n" + i.type.type + "\\n"+str(i.quantity) +"\\n"+i.description
+            message = "किसान"
+            message = str(message.encode("UTF-8"))[1:]
 
     elif arr[0]=="bid":
             transno=Bid.objects.get(transno=arr[1])
@@ -436,6 +438,15 @@ def ApproveBid(request, pk):
     return Response("Transaction Done")
 
 
-
+@api_view(['get'])
+def get_farmer_storage_warehouse(request):
+    farmer = request.user
+    print(farmer.name)
+    storagetransactions = StorageTransaction.objects.filter(farmer=farmer)
+    print(storagetransactions)
+    # warehouses = [st.warehouse.id for st in storagetransactions]
+    # queryset = Warehouse.objects.filter(pk__in = warehouses)
+    data = StorageTransactionSerializer(storagetransactions,many=True).data
+    return Response(data)
 
 

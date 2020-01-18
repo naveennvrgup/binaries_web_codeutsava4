@@ -42,7 +42,11 @@ urlpatterns = [
     path('farmerPlacedBids/', views.FarmerPlacedbids),
     path('farmerPlaceBid/', views.FarmerPlaceBid),
     path('approveBid/pk', views.ApproveBid),
-    path('farmerResponseBideList/pk',views.FarmerResponseBidList)
+    path('farmerResponseBideList/pk',views.FarmerResponseBidList),
+
+
+    ##############
+    path('getFarmerStoredWarehouse', views.get_farmer_storage_warehouse),
 
     
 ]
