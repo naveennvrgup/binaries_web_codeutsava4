@@ -418,9 +418,12 @@ def FarmerActiveBidList(request):
 @api_view(['GET', 'POST'])
 def FarmerPlaceBid(request):    
     farmer = request.user
-    bid = Bid.objects.get(request.data['bidno'])
-    PlaceBid(bid = bid, farmer = farmer, price = request.data['price'], description = request.data['description']).save()
-    return Response("True")
+    bid = Bid.objects.get(id=int(request.data['bidno']))
+    PlaceBid(bid = bid, 
+    farmer = farmer, 
+    price = int(request.data['price']), 
+    description = request.data['description']).save()
+    return Response(True)
     
 
 @api_view(['GET'])
