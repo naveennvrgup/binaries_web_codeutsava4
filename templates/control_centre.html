@@ -5,100 +5,54 @@
     <script src="./spring.js"></script>
     <script src="./springyui.js"></script>
     <script>
-            var graph = new Springy.Graph();
-
-            var labels, connections;
-
-            fetch('http://localhost:8000/user/graphy/')
-                .then(d => d.json())
-                .then(d => {
-                    labels = d.labels
-                    connections = d.connections
-
-                    console.log(labels)
-                    console.log(connections)
-                })
+        fetch('http://localhost:8000/user/graphy/')
+            .then(d => d.json())
+            .then(d => {
+                var graph = new Springy.Graph();
+                var labels, connections;
+                var obj = {}
 
 
-            // labels = labels.map(label => graph.newNode({
-            //     label
-            // }))
-            // connections = connections.map(con => graph.newEdge(con[0], con[1], {
-            //     color: con[2]
-            // }))
+                labels = d.labels
+                connections = d.connections
+
+                for (x in labels) {
+                    obj[labels[x]]= graph.newNode({
+                        label: labels[x]
+                    });
+                }
+                console.log(obj)
+                for (x in connections) {
+                    graph.newEdge(
+                        obj[connections[x][0]], 
+                        obj[connections[x][1]], {
+                        color: connections[x][2]
+                    })
+                }
+                console.log(labels)
+                console.log(connections)
 
 
-            var michael = graph.newNode({
-                label: 'Michael'
-            });
-            var jessica = graph.newNode({
-                label: 'Jessica'
-            });
-            var timothy = graph.newNode({
-                label: 'Timothy'
-            });
-            var barbara = graph.newNode({
-                label: 'Barbara'
-            });
-            var franklin = graph.newNode({
-                label: 'Franklin'
-            });
-            var monty = graph.newNode({
-                label: 'Monty'
-            });
-            var james = graph.newNode({
-                label: 'James'
-            });
-            var bianca = graph.newNode({
-                label: 'Bianca'
-            });
+                jQuery(function () {
+                    var springy = window.springy = jQuery('#springydemo').springy({
+                        graph: graph,
+                        nodeSelected: function (node) {
+                            console.log('Node selected: ' + JSON.stringify(node.data));
+                        }
+                    });
 
-            graph.newEdge(michael, barbara, {
-                color: '#6A4A3C'
-            });
-            graph.newEdge(michael, jessica, {
-                color: '#CC333F'
-            });
-            graph.newEdge(jessica, barbara, {
-                color: '#EB6841'
-            });
-            graph.newEdge(michael, timothy, {
-                color: '#EDC951'
-            });
-            graph.newEdge(franklin, monty, {
-                color: '#7DBE3C'
-            });
-            graph.newEdge(barbara, monty, {
-                color: '#000000'
-            });
-            graph.newEdge(monty, james, {
-                color: '#00A0B0'
-            });
-            graph.newEdge(barbara, timothy, {
-                color: '#6A4A3C'
-            });
-            graph.newEdge(barbara, bianca, {
-                color: '#CC333F'
-            });
-            graph.newEdge(bianca, monty, {
-                color: '#EB6841'
-            });
-
-            jQuery(function () {
-                var springy = window.springy = jQuery('#springydemo').springy({
-                    graph: graph,
-                    nodeSelected: function (node) {
-                        console.log('Node selected: ' + JSON.stringify(node.data));
-                    }
+                    var demo = document.querySelector('#springydemo')
+                    demo.setAttribute('width', window.innerWidth)
+                    demo.setAttribute('height', window.innerHeight)
                 });
-
-                var demo = document.querySelector('#springydemo')
-                demo.setAttribute('width', window.innerWidth)
-                demo.setAttribute('height', window.innerHeight)
-            });
+            })
 
 
-        main()
+
+
+
+
+        // main()
         // setInterval(main, 1000);
     </script>
 
