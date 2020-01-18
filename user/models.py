@@ -51,7 +51,7 @@ class Farms(models.Model):
         return self.farmer.name
 
 class Warehouse(models.Model):
-    name = models.CharField(max_length = 50)
+    name = models.CharField(max_length = 50,default="")
     owner=models.ForeignKey('User',on_delete=models.CASCADE, related_name='warehouses')
     CHOICES=(
                 ('PVT','Private'),

@@ -1,3 +1,4 @@
+from django.views.generic import View
 from django.shortcuts import render
 from datetime import date
 from rest_framework.decorators import api_view
@@ -133,8 +134,8 @@ def TransactionSaleListView(req):
 
 
 class ProduceListFilter(APIView):
-    
-    
+
+
     def get(self, request):
         num = request.GET['num']
         type = request.GET['type']
@@ -158,7 +159,7 @@ class ApproveOrder(APIView):
         else:
             obj.valid = False
             mess = "Not Enough Produce"
-        obj.save()        
+        obj.save()
         return Response({'message':mess})
 
 
@@ -244,8 +245,8 @@ def gen_mess(user, arr):
                 type = type,
                 farmer=user,
                 grade=arr[4],
-                quantity=int(arr[2]),
-                price=int(arr[3]),
+                quantity=float(arr[2]),
+                price=float(arr[3]),
                 location = loc,
                 date=date.today()
             )
@@ -268,7 +269,25 @@ def gen_mess(user, arr):
                 order.approve = False
                 message = "Order Declined"
             order.save()
+
+        elif arr[0]=="bid":
+            transno=Bid.objects.get(transno=arr[1])
+            bidval=PlaceBid(
+                        bid=transno,
+                        farmer=user,
+                        price=float(arr[2]),
+                        description=arr[3],
+
+
+            )
+            bidval.save()
+            message="Bid Placed Successfully"
+
         return message
+
+
+
+
 
 
 @api_view(['GET', 'POST', ])
