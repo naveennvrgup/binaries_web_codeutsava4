@@ -114,7 +114,8 @@ def createStorageTransaction(request):
         produce = produce,
         farmer = farmer,
         quantity = quantity,
-        cost = cost
+        cost = cost,
+        farmerprice = produce.price
     )
     storagetransaction.save()
 

@@ -72,27 +72,47 @@ class FoodGrainListView(generics.ListCreateAPIView):
 def FoodGrainDetailView(req,pk):
     foodgrains = []
     produces = []
+    warehouses = []
     farmers = []
     res_quantity=defaultdict(int)
     res_price=defaultdict(int)
     res_farmers = {}
     
-    for x in FoodGrain.objects.all():
-        produces.append(x.produce.all())
+    currfoodgrain = FoodGrain.objects.get(id=pk)
+    produces = Produce.objects.filter(type = currfoodgrain)
+    warehouses = Warehouse.objects.filter(foodgrain=currfoodgrain)
+
+    result = []
+
+    for produce in produces:
+        temp = {}
+        farmer = produce.farmer
+        quantity = produce.quantity
+        farmerwarehouse = StorageTransaction.objects.filter(produce = produce)
+        for fw in farmerwarehouse:
+            quantity+= fw.quantity
+        price = produce.price
+        temp['farmer'] = UserSerializer(farmer).data
+        temp['quantity'] = quantity
+        temp['price'] = price
+        result.append(temp)
+
+    return Response(result)
+
 
     
-    for x in produces:
-        for y in x:
-            key=str(y.farmer.contact)
-            res_quantity[key]+=y.quantity
-            res_quantity[key]=y.price
-            res_farmers[key]=UserSerializer(y.farmer).data
+    # for x in produces:
+    #     for y in x:
+    #         key=str(y.farmer.contact)
+    #         res_quantity[key]+=y.quantity
+    #         res_quantity[key]=y.price
+    #         res_farmers[key]=UserSerializer(y.farmer).data
     
-    return Response([{
-        'farmer':res_farmers[x],
-        'quantity':res_quantity[x],
-        'price':res_price[x]
-    }for x in res_quantity])
+    # return Response([{
+    #     'farmer':res_farmers[x],
+    #     'quantity':res_quantity[x],
+    #     'price':res_price[x]
+    # }for x in res_quantity])
 
 
 
