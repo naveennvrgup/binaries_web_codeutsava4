@@ -33,6 +33,7 @@ urlpatterns = [
     path('getCenterDetails/<int:pk>', views.GetCenterDetails.as_view()),
     path('report_produce/',views.report_produce),
     path('storagetransaction/',views.createStorageTransaction),
+    path('farmerDashboardGraph/',views.farmerDashboardGraphView),
 
     # path('createBid/',createBidView),    
     # path('pastBidsList/',pastBidsListView),    

@@ -286,10 +286,6 @@ def gen_mess(user, arr):
         return message
 
 
-
-
-
-
 @api_view(['GET', 'POST', ])
 def message(request):
     contact = request.GET['contact']
@@ -300,15 +296,6 @@ def message(request):
     mess = gen_mess(user,arr)
     print(message)
     return Response({'message':mess})
-
-    
-
-
-    
-
-    
-    
-
 
 
 class GetCenterDetails(APIView):
@@ -334,15 +321,18 @@ class GetCenterDetails(APIView):
             storage_revenue[i.produce.type.id] += i.cost
         for i in sale_transactions:
             sale_revenue[i.produce.type.id] += i.price
-
-
-
-        
-            
-
-
         
         return Response({'farms' : farms, 'farmers' : farmers, 'produce' : produce , 'warehouses':  warehouses, 'quant' : quant, 'storage_revenue': storage_revenue, 'sale_revenue':sale_revenue})
 
 
-        
+@api_view(['get'])
+def farmerDashboardGraphView(req):
+    import random
+    result = []
+
+    months = ['jan','feb','mar','apr','jun','jul','aug','sep','oct','nov','dec']
+    for x in range(17,20):
+        for month in months:
+            result.append([str(x)+"'"+month,round(random.random()*100,2),round(random.random()*100,2),round(random.random()*100,2)])
+    
+    return Response(result)
