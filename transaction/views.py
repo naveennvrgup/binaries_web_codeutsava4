@@ -311,24 +311,6 @@ def gen_mess(user, arr):
     print(message)
     return message
 
-
-# def send_message_msg91api(contact, message, **kwargs):
-#     # otp = str(randint(1000, 9999))
-#     # if 'otp' in kwargs:
-#     #     otp = kwargs['otp']
-#     # message = "Your OTP for E-Cell NIT Raipur portal is {}.".format(otp)
-#     conn = http.client.HTTPSConnection("api.msg91.com")
-#     contact = str(contact)
-#     authkey = config('atkey')
-#     url = "https://api.msg91.com/api/sendhttp.php?mobiles={}&authkey={}&route=4&sender=BINARY&message={}&country=91".format(
-#         contact, authkey, message)
-#     print(url)
-#     conn.request("GET", url)
-#     res = conn.getresponse()
-#     print(res)
-    # data = res.read()
-    # return otp
-
 from transaction.sms import send_sms
 
 @api_view(['POST'])
