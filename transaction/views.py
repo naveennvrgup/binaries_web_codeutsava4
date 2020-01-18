@@ -61,12 +61,12 @@ def CreateBidView(req):
     type = FoodGrain.objects.get(type=req.data['foodgrain'])
     quantity = req.data['quantity']
     description = req.data['description']
-    deadline = datetime.datetime.now()
+    deadline = datetime.datetime(2020,2,2)
 
     queryset = PlaceBid.objects.create(
         buyer = req.user,
         type = type,
-        quantity= quantity,
+        quantity= int(quantity),
         nbids=0,
         description=description,
         deadline=deadline
@@ -392,11 +392,11 @@ def farmerDashboardGraphView(req):
 
 
 
-
-class PastBidList(APIView):
-    def get(self, request):
-        user = request.user
+@api_view(['get'])
+def PastBidList(req):
+        user = req.user
         bids = Bid.objects.filter(buyer = user)
+        bids = BidSerializer(bids,many=True).data
         return Response(bids)
 
 class FarmerPlacedbids(APIView):
@@ -407,11 +407,12 @@ class FarmerPlacedbids(APIView):
 
 
 
-class FarmerActiveBidList(APIView):
-    def get(self, request):
-        user = request.user
-        activeplacedbids = PlaceBid.objects.filter(farmer = user, isActive = True)
-        return Response(activeplacedbids)
+@api_view(['get'])
+def FarmerActiveBidList(request):
+    user = request.user
+    activeplacedbids = Bid.objects.filter(isActive = True)
+    obj = BidSerializer(activeplacedbids,many=True).data
+    return Response(obj)
 
 
 @api_view(['GET', 'POST'])
@@ -458,9 +459,9 @@ def createBid(req):
     bid = Bid.objects.create(
         buyer=req.user,
         type=FoodGrain.objects.get(type=req.data['foodgrain']),
-        quantity=req.data['quantity'],
+        quantity=int(req.data['quantity']),
         description=req.data['description'],
-        deadline=req.data['deadline']
+        deadline='2020-02-01'
     )
 
     obj = BidSerializer(bid)
