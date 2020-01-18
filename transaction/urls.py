@@ -34,11 +34,15 @@ urlpatterns = [
     path('report_produce/',views.report_produce),
     path('storagetransaction/',views.createStorageTransaction),
     path('farmerDashboardGraph/',views.farmerDashboardGraphView),
+    ###############
 
-    # path('createBid/',createBidView),    
-    # path('pastBidsList/',pastBidsListView),    
-    # path('farmerActiveBidList/',farmerActiveBidListView),    
-    # path('farmerPlaceBid/',farmerPlaceBidView),    
-    # path('farmerResponseBidsList/',farmerResponseBidsListView),   
-    # path('approveBid/',approveBidView), 
+
+    path('pastBidsList/', views.PastBidList),
+    path('farmerActiveBidList/', views.FarmerActiveBidList),
+    path('farmerPlacedBids/', views.FarmerPlacedbids),
+    path('farmerPlaceBid/', views.FarmerPlaceBid),
+    path('approveBid/pk', views.ApproveBid),
+    path('farmerResponseBideList/pk',views.FarmerResponseBidList)
+
+    
 ]

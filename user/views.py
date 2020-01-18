@@ -248,6 +248,97 @@ def delayView(req):
     time.sleep(3)
     return Response("something")
 
+
+@api_view(['get'])
+def GraphyView(req):
+    users = User.objects.filter(role = "FAR")
+    centres = Centre.objects.all()
+    warehouses = Warehouse.objects.all()
+    farms = Farms.objects.all()
+
+    farms_list = []
+    user_list = []
+    centre_list = []
+    warehouse_list = []
+    # print('a')
+
+    for i in users:
+        user_list.append(i.name)
+    for i in centres:
+        centre_list.append("Center : " + str(i.id))
+    for i in warehouses:
+        warehouse_list.append(i.name)
+    for i in farms:
+        farms_list.append("Farm : "+str(i.id))
+
+    # print('a')
+    
+    labels = set(user_list + centre_list + warehouse_list + farms_list)
+
+    conn =[]
+    farm_farmer = []
+    centre_farmer = []
+    farmer_warehouse = []
+    # print('a')
+    for centre in centres:
+        dic = {'farms' : [], 'farmers' : [], 'warehouses' : [] }
+        far_list =[]
+        # print('a')
+        loc = Location.objects.filter(centre = centre)
+        farms_ = []
+        # print('b')
+        for loc_i in loc:
+            f = []
+            for i in farms:
+                if i.location in loc:
+                    f.append(i)
+            for ff in f:
+                farms_.append(ff)
+                # print('d')
+        farmers_ = []
+        for farm in farms_:
+            farmers_.append(farm.farmer.name)
+            farm_farmer.append((farm.farmer.name, "Farm : "+str(farm.id)))
+            centre_farmer.append(("Centre : " + str(centre.id), farm.farmer.name))
+
+        for trans in StorageTransaction.objects.all():
+            farmer_warehouse.append((trans.farmer.name, trans.warehouse.name)) 
+
+    conn = list(set(farm_farmer + centre_farmer + farmer_warehouse))
+    return Response({"labels":labels, "connections": conn})
+
+        
+            
+
+
+
+
+
+
+    
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # @api_view(['get'])
 # def GraphyView(req):
 #     centres = [x for x in Centre.objects.all()]

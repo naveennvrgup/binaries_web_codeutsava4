@@ -14,6 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated  
 from collections import defaultdict
+from .sms import send_sms
 
 from rest_framework import status
 import traceback
@@ -46,7 +47,7 @@ class TotalBidListView(generics.ListCreateAPIView):
     queryset = Bid.objects.all()
     serializer_class = BidSerializer
 
-class ActiveBidListView(generics.ListCreateAPIView):
+class ActiveBidListView(generics.ListAPIView):
     queryset = Bid.objects.filter(isActive = True)
     serializer_class = BidSerializer
 
@@ -57,17 +58,16 @@ class BidDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(['post'])
 def CreateBidView(req):
-    type = FoodGrain.objects.filter(id=req.data['foodgrain_id'])
-    quantity = FoodGrain.objects.filter(id=req.data['quantity'])
-    nbids = FoodGrain.objects.filter(id=req.data['price'])
-    description = FoodGrain.objects.filter(id=req.data['description'])
+    type = FoodGrain.objects.get(id=req.data['foodgrain_id'])
+    quantity = req.data['quantity']
+    description = req.data['description']
     deadline = datetime.datetime.now()
 
     queryset = PlaceBid.objects.create(
         buyer = req.user,
         type = type,
         quantity= quantity,
-        nbids=nbids,
+        nbids=0,
         description=description,
         deadline=deadline
     )
@@ -390,3 +390,71 @@ def farmerDashboardGraphView(req):
             result.append([str(x)+"'"+month,round(random.random()*100,2),round(random.random()*100,2),round(random.random()*100,2)])
     
     return Response(result)
+
+
+
+
+class PastBidList(APIView):
+    def get(self, request):
+        user = request.user
+        bids = Bid.objects.filter(buyer = user)
+        return Response(bids)
+
+class FarmerPlacedbids(APIView):
+    def get(self, request):
+        user = request.user
+        placedbids = PlaceBid.objects.filter(farmer = user)
+        return Response(placedbids)
+
+
+
+class FarmerActiveBidList(APIView):
+    def get(self, request):
+        user = request.user
+        activeplacedbids = PlaceBid.objects.filter(farmer = user, isActive = True)
+        return Response(activeplacedbids)
+
+
+@api_view(['GET', 'POST'])
+def FarmerPlaceBid(request):    
+    farmer = request.user
+    bid = Bid.objects.get(request.data['bidno'])
+    PlaceBid(bid = bid, farmer = farmer, price = request.data['price'], description = request.data['description']).save()
+    return Response("True")
+    
+
+@api_view(['GET'])
+def FarmerResponseBidList(request, pk):    
+    bid = Bid.objects.get(id = pk)
+    return Response(bid.placedbids.objects.all())
+
+
+@api_view(['GET'])
+def ApproveBid(request, pk):  
+    placedBid = PlaceBid.objects.get(id = pk)  
+    bid = placedBid.bid
+    """transno = models.CharField(max_length=200,null=True, blank=True)
+    approved=models.BooleanField(default=False)
+    type=models.CharField(max_length=1,choices = CHOICES)
+    seller=models.ForeignKey(User,on_delete=models.CASCADE, related_name='sale_seller')
+    buyer=models.ForeignKey(User,on_delete=models.CASCADE, related_name='sale_buyer')
+    produce=models.ForeignKey(Produce, blank=True, null=True, on_delete=models.CASCADE)
+    foodgrain=models.ForeignKey(FoodGrain, blank=True, null=True, on_delete=models.CASCADE)
+    warehouse = models.ForeignKey(Warehouse, blank=True, null=True, on_delete=models.CASCADE)
+    quantity=models.FloatField()
+    price=models.FloatField()"""
+    transno = Random.randint(1, 10**6)
+    approved = True
+    type = bid.type.name
+    seller = placedBid.farmer
+    buyer = bid.buyer
+    foodgrain = bid.type
+    quantity = placedBid.quantity
+    price = placedBid.price
+    TransactionSale(transno = transno, approved =approved, type = type, seller =seller, buyer = buyer, foodgrain = foodgrain, quantity = quantity, price = price).save()
+    return Response("Transaction Done")
+
+
+
+
+
