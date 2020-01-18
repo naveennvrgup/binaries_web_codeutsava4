@@ -385,9 +385,8 @@ def farmerDashboardGraphView(req):
     result = []
 
     months = ['jan','feb','mar','apr','jun','jul','aug','sep','oct','nov','dec']
-    for x in range(17,20):
-        for month in months:
-            result.append([str(x)+"'"+month,round(random.random()*100,2),round(random.random()*100,2),round(random.random()*100,2)])
+    for month in months:
+        result.append([month,round(random.random()*100,2),round(random.random()*100,2),round(random.random()*100,2)])
     
     return Response(result)
 
