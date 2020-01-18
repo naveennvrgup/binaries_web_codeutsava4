@@ -88,7 +88,7 @@ def FoodGrainDetailView(req,pk):
             for strans in y.farmer.storagetransaction_set.filter(produce=y):
                 res_quantity[key]+=strans.quantity
 
-            res_quantity[key]=y.price
+            res_price[key]=y.price
             res_farmers[key]=UserSerializer(y.farmer).data
 
         
@@ -233,43 +233,48 @@ def delayView(req):
     time.sleep(3)
     return Response("something")
 
-@api_view(['get'])
-def GraphyView(req):
-    centres = [x for x in Centre.objects.all()]
-    farmers = []
-    labels = set(['server'])
-    connections = []
+# @api_view(['get'])
+# def GraphyView(req):
+#     centres = [x for x in Centre.objects.all()]
+#     farmers = []
+#     labels = set(['server'])
+#     connections = []
 
-    black='#000000'
-    green='#00ff00'
-    blue='#0000ff'
-    red='#ff0000'
+#     black='#000000'
+#     green='#00ff00'
+#     blue='#0000ff'
+#     red='#ff0000'
 
-    for x in centres:
-        for y in x.user_set.all():
-            if y.role=='FAR':
-                labels.add(y.name+' '+y.dob)
-                farmers.append(y)
-                connections.append([x.cid,y.name,green])
+#     for x in centres:
+#         for y in x.user_set.all():
+#             if y.role=='FAR':
+#                 labels.add(y.name+' '+y.dob)
+#                 farmers.append(y)
+#                 connections.append([x.cid,y.name,green])
     
-    for x in farmers:
-        i=1
-        for y in x.farms:
-            farmname=x.name+' farm '+str(i)
-            labels.add(farmname)
-            connections.append([x.name,farmname,blue])
-            i+=1
+#     for x in farmers:
+#         i=1
+#         for y in x.farms:
+#             farmname=x.name+' farm '+str(i)
+#             labels.add(farmname)
+#             connections.append([x.name,farmname,blue])
+#             i+=1
 
-        for y in x.warehouses:
-            labels.add(y.name)
-            connections.append([x.name,y.name,black])
+#         for y in x.warehouses:
+#             labels.add(y.name)
+#             connections.append([x.name,y.name,black])
 
-    for x in centres:
-        labels.add(x.cid)
-        connections.append(['server',x.cid,red])
+#     for x in centres:
+
+#     return Response({
+#         'connections': connections,
+#         'labels': list(labels)
+#     })
+#         labels.add(x.cid)
+#         connections.append(['server',x.cid,red])
         
 
-    return Response({
-        'connections': connections,
-        'labels': list(labels)
-    })
+#     return Response({
+#         'connections': connections,
+#         'labels': list(labels)
+#     })
