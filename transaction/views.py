@@ -315,7 +315,7 @@ from transaction.sms import send_sms
 @api_view(['POST'])
 def message(request):
     contact = request.data['contact']
-    message = request.data['message']
+    message = request.data['message']+" "
     newcontact = contact[3:]
     print(contact, message)
     message=message.lower()
@@ -364,10 +364,34 @@ class GetCenterDetails(APIView):
 def farmerDashboardGraphView(req):
     import random
     result = []
+    one = 34
+    two = 44
+    three=59
 
     months = ['jan','feb','mar','apr','jun','jul','aug','sep','oct','nov','dec']
     for month in months:
-        result.append([month,round(random.random()*100,2),round(random.random()*100,2),round(random.random()*100,2)])
+        change = 5
+
+        one_diff = change*(random.random())/100
+        two_diff = change*(random.random())/100
+        three_diff = change*(random.random())/100
+
+        if random.randint(0,10)>5:
+            one-=one*one_diff
+        else:
+            one+=one*one_diff
+
+        if random.randint(0,10)>5:
+            two-=two*two_diff
+        else:
+            two+=two*two_diff
+
+        if random.randint(0,10)>5:
+            three-=three*three_diff
+        else:
+            three+=three*three_diff
+
+        result.append([month,one,two,three])
     
     return Response(result)
 
