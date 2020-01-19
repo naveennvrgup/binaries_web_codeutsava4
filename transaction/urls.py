@@ -42,10 +42,10 @@ urlpatterns = [
     path('farmerPlacedBids/<int:id>/', views.FarmerPlacedbids),
     path('farmerPlaceBid/', views.FarmerPlaceBid),
     path('approveBid/<int:pk>/', views.ApproveBid),
-    path('farmerResponseBideList/',views.FarmerResponseBidList)
+    path('farmerResponseBidList/<int:pk>/',views.FarmerResponseBidList),
 
     ##############
-    path('getFarmerStoredWarehouse', views.get_farmer_storage_warehouse),
+    path('getFarmerStoredWarehouse/', views.get_farmer_storage_warehouse),
     path('DefCentreView/',views.DefCentreView.as_view())
 
     

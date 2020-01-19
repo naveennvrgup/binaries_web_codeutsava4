@@ -416,7 +416,9 @@ def FarmerPlaceBid(request):
 @api_view(['GET'])
 def FarmerResponseBidList(request, pk):    
     bid = Bid.objects.get(id = pk)
-    return Response(bid.placedbids.objects.all())
+    pbids = bid.placebid_set.all()
+    pbids = PlaceBidSerializer(pbids,many=True).data
+    return Response(pbids)
 
 
 @api_view(['GET'])
@@ -457,6 +459,8 @@ def createBid(req):
         description=req.data['description'],
         deadline='2020-02-01'
     )
+    obj = BidSerializer(bid).data
+    return Response(obj)
 
 @api_view(['get'])
 def get_farmer_storage_warehouse(request):
