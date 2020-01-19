@@ -36,7 +36,7 @@ urlpatterns = [
     path('farmerDashboardGraph/',views.farmerDashboardGraphView),
     ###############
 
-
+    path('createBid/',views.createBid),
     path('pastBidsList/', views.PastBidList),
     path('farmerActiveBidList/', views.FarmerActiveBidList),
     path('farmerPlacedBids/', views.FarmerPlacedbids),

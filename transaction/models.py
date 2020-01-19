@@ -72,16 +72,22 @@ Add a completely new delivery model, with a new user role.
 #     def __str__(self):
 #         return self.name
 
+def creatransno():
+    import random 
+    return str(round(random.random()*10**12))
+
 
 class Bid(models.Model):
     isActive = models.BooleanField(default = True)
-    transno=models.CharField(max_length=50,unique=True)
+    transno=models.CharField(max_length=50,unique=True,default=creatransno)
     buyer=models.ForeignKey(User,on_delete=models.CASCADE, related_name='bids')
     type=models.ForeignKey(FoodGrain,on_delete=models.CASCADE)
     quantity=models.FloatField()
     nbids = models.IntegerField(default = 0) #price
     description=models.TextField()
     deadline=models.DateField()
+
+    
 
     def __str__(self):
         return self.transno

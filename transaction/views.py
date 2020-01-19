@@ -58,15 +58,15 @@ class BidDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(['post'])
 def CreateBidView(req):
-    type = FoodGrain.objects.get(id=req.data['foodgrain_id'])
+    type = FoodGrain.objects.get(type=req.data['foodgrain'])
     quantity = req.data['quantity']
     description = req.data['description']
-    deadline = datetime.datetime.now()
+    deadline = datetime.datetime(2020,2,2)
 
     queryset = PlaceBid.objects.create(
         buyer = req.user,
         type = type,
-        quantity= quantity,
+        quantity= int(quantity),
         nbids=0,
         description=description,
         deadline=deadline
@@ -373,11 +373,11 @@ def farmerDashboardGraphView(req):
 
 
 
-
-class PastBidList(APIView):
-    def get(self, request):
-        user = request.user
+@api_view(['get'])
+def PastBidList(req):
+        user = req.user
         bids = Bid.objects.filter(buyer = user)
+        bids = BidSerializer(bids,many=True).data
         return Response(bids)
 
 class FarmerPlacedbids(APIView):
@@ -388,19 +388,23 @@ class FarmerPlacedbids(APIView):
 
 
 
-class FarmerActiveBidList(APIView):
-    def get(self, request):
-        user = request.user
-        activeplacedbids = PlaceBid.objects.filter(farmer = user, isActive = True)
-        return Response(activeplacedbids)
+@api_view(['get'])
+def FarmerActiveBidList(request):
+    user = request.user
+    activeplacedbids = Bid.objects.filter(isActive = True)
+    obj = BidSerializer(activeplacedbids,many=True).data
+    return Response(obj)
 
 
 @api_view(['GET', 'POST'])
 def FarmerPlaceBid(request):    
     farmer = request.user
-    bid = Bid.objects.get(request.data['bidno'])
-    PlaceBid(bid = bid, farmer = farmer, price = request.data['price'], description = request.data['description']).save()
-    return Response("True")
+    bid = Bid.objects.get(id=int(request.data['bidno']))
+    PlaceBid(bid = bid, 
+    farmer = farmer, 
+    price = int(request.data['price']), 
+    description = request.data['description']).save()
+    return Response(True)
     
 
 @api_view(['GET'])
@@ -434,6 +438,15 @@ def ApproveBid(request, pk):
     TransactionSale(transno = transno, approved =approved, type = type, seller =seller, buyer = buyer, foodgrain = foodgrain, quantity = quantity, price = price).save()
     return Response("Transaction Done")
 
+@api_view(['post'])
+def createBid(req):
+    bid = Bid.objects.create(
+        buyer=req.user,
+        type=FoodGrain.objects.get(type=req.data['foodgrain']),
+        quantity=int(req.data['quantity']),
+        description=req.data['description'],
+        deadline='2020-02-01'
+    )
 
 @api_view(['get'])
 def get_farmer_storage_warehouse(request):
@@ -460,3 +473,6 @@ class DefCentreView(APIView):
             #send_sms(num, message)
             print(num, message)
         return Response(message)
+    # obj = BidSerializer(bid)
+
+    # return Response(obj.data)
