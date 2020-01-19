@@ -7,8 +7,9 @@ def send_sms(contact, message):
 
     payload = '{ \"sender\": \"KISANI\", \"route\": \"4\", \"country\": \"91\", \"sms\": [ { \"message\": \"'+message+'\", \"to\": [ \"'+str(contact)+'\" ] } ] }'
 
+    print(config('authkey'))
     headers = {
-        'authkey': config('authkey'),
+        'authkey':config('authkey') ,
         'content-type': "application/json"
         }
 

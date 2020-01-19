@@ -44,5 +44,9 @@ urlpatterns = [
     path('approveBid/<int:pk>/', views.ApproveBid),
     path('farmerResponseBideList/',views.FarmerResponseBidList)
 
+    ##############
+    path('getFarmerStoredWarehouse', views.get_farmer_storage_warehouse),
+    path('DefCentreView/',views.DefCentreView.as_view())
+
     
 ]

@@ -271,23 +271,23 @@ def gen_mess(user, arr):
         queryset = Warehouse.objects.filter(foodgrain = type , free_space__gt = int(arr[2]))
         message=""
         for i in queryset:
-            message+=i.name +"-"+str(i.free_space)+"-"+str(i.total_space)+"--"  
+            message+="Name : " +i.name +"\\n"+"Free Space : " + str(i.free_space)+"\\n"+"Total Space"+str(i.total_space)+""  
 
     elif arr[0] == 'approve' or arr[0] == 'decline':
         order = TransactionSale.objects.get(transno = int(arr[1]))
         if arr[0] == 'approve':
             order.approve = True
-            message = "Order Approved"
+            message = "Order number "+arr[1]+" Approved"
         else:
             order.approve = False
-            message = "Order Declined"
+            message = "Order number "+arr[1]+" Decline"
         order.save()
 
-    elif arr[0]=="getbid":
+    elif arr[0]=="getbid" or arr[0] =="किसान":
             queryset = Bid.objects.all()
             message = ''
             for i in queryset:
-                message += str(i.transno) + "--" + i.type.type + "--"+str(i.quantity) +"--"+i.description
+                message += "Bid no : "+str(i.transno) + "//n" + "FoodGrain : "+i.type.type + "//n"+"Quantity : "+str(i.quantity) +"//n"+"Description : "+i.description
 
     elif arr[0]=="bid":
             transno=Bid.objects.get(transno=arr[1])
@@ -304,30 +304,11 @@ def gen_mess(user, arr):
 
     elif arr[0] == "weather":
             message = "Weather report for following Month : Mostly Sunny , Expected light showers on 5,6 and 7 February"
-
     else:
         message = "PLease follow the standard format"
 
     print(message)
     return message
-
-
-# def send_message_msg91api(contact, message, **kwargs):
-#     # otp = str(randint(1000, 9999))
-#     # if 'otp' in kwargs:
-#     #     otp = kwargs['otp']
-#     # message = "Your OTP for E-Cell NIT Raipur portal is {}.".format(otp)
-#     conn = http.client.HTTPSConnection("api.msg91.com")
-#     contact = str(contact)
-#     authkey = config('atkey')
-#     url = "https://api.msg91.com/api/sendhttp.php?mobiles={}&authkey={}&route=4&sender=BINARY&message={}&country=91".format(
-#         contact, authkey, message)
-#     print(url)
-#     conn.request("GET", url)
-#     res = conn.getresponse()
-#     print(res)
-    # data = res.read()
-    # return otp
 
 from transaction.sms import send_sms
 
@@ -477,6 +458,31 @@ def createBid(req):
         deadline='2020-02-01'
     )
 
-    obj = BidSerializer(bid)
+@api_view(['get'])
+def get_farmer_storage_warehouse(request):
+    farmer = request.user
+    print(farmer.name)
+    storagetransactions = StorageTransaction.objects.filter(farmer=farmer)
+    print(storagetransactions)
+    # warehouses = [st.warehouse.id for st in storagetransactions]
+    # queryset = Warehouse.objects.filter(pk__in = warehouses)
+    data = StorageTransactionSerializer(storagetransactions,many=True).data
+    return Response(data)
 
-    return Response(obj.data)
+
+class DefCentreView(APIView):
+    def get(self, request):
+        id_ = 1
+        centre = Centre.objects.get(id = id_)
+        loc = Location.objects.filter(centre = centre)
+        farms = [farm.id for farm in Farms.objects.all() if farm.location in loc]
+        farmers = [Farms.objects.get(id = i).farmer.contact for i in farms]
+        print(centre.def_crops)
+        message = "Centre : "+str(id_)+" is facing a shortage of " + ', '.join(centre.def_crops.all())
+        for num in farmers:
+            #send_sms(num, message)
+            print(num, message)
+        return Response(message)
+    # obj = BidSerializer(bid)
+
+    # return Response(obj.data)

@@ -9,8 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated 
-from collections import defaultdict
+from collections import defaultdict, Counter
 import math
+
 
 class UserListView(generics.ListCreateAPIView):
 
@@ -221,14 +222,14 @@ class findWareHouse(APIView):
         return Response(res)
 
 class FarmerAI(APIView):
-    def get(self, request, pk):
-        farmer = User.objects.get(id = pk)
+    def get(self, request):
+        farmer = request.user
         print('a',farmer.farms.all())
         loc = farmer.farms.all()[0].location
         print('adarsh')
         rec_crops = Centre.objects.get(locations = loc).rec_crops
         def_crops = Centre.objects.get(locations = loc).def_crops
-        print(rec_crops)
+        # print(rec_crops)
 
         return Response({'rec_crops' : [i.type for i in rec_crops.all()], 'def_crops' : [i.type for i in def_crops.all()]})
 
@@ -309,6 +310,25 @@ def GraphyView(req):
 
         
             
+
+
+class PotentialBuyers(APIView):
+    def get(self, request, foodgrain):
+        type = FoodGrain.objects.get(type = foodgrain)
+        print(type)
+        trans = TransactionSale.objects.filter(foodgrain = type)
+        users = []
+        for tran in trans:
+            users.append(tran.buyer)
+        print(users)
+        cnt = Counter(users)
+        users = list(set(users))
+        users.sort(key = lambda i : cnt[i], reverse = True)
+        users = [{'name':user.name, "contact": user.contact} for user in users]
+        return Response(users)
+        
+
+
 
 
 

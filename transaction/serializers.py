@@ -37,6 +37,18 @@ class PlaceBidSerializer(serializers.ModelSerializer):
  
 
 class StorageTransactionSerializer(serializers.ModelSerializer):
+    foodgrain = serializers.SerializerMethodField('get_produce_foodgrain')
+    whName = serializers.SerializerMethodField('get_warehouse_name')
+    fgDeadline = serializers.SerializerMethodField('get_deadline')
+
+    def get_deadline(self,st):
+        return st.produce.type.life
+
+    def get_warehouse_name(self, st):
+        return st.warehouse.name
+
+    def get_produce_foodgrain(self, st):
+        return st.produce.type.type
 
     def create(self, valid_data):
         warehouse = Warehouse.objects.get(id=valid_data['warehouse'])
@@ -64,7 +76,7 @@ class StorageTransactionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StorageTransaction
-        fields = ['warehouse','farmer','produce','quantity','cost']
+        fields = ['warehouse','farmer','produce','quantity','cost','date','foodgrain', 'whName','fgDeadline']
  
  
 
