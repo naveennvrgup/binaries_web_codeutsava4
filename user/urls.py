@@ -48,6 +48,6 @@ urlpatterns = [
     path('notifications/', views.ListNotfications),    
 
     path('delay/',views.delayView),
-    path('get_potential_buyers/<str:type>',views.PotentialBuyers.as_view()),
+    path('get_potential_buyers/<str:foodgrain>/',views.PotentialBuyers.as_view()),
 
 ]

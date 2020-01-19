@@ -313,18 +313,19 @@ def GraphyView(req):
 
 
 class PotentialBuyers(APIView):
-    def get(self, request, type):
-        type = FoodGrain.objects.get(type = type)
-        trans = TransactionSale.objects.filter(type = type)
+    def get(self, request, foodgrain):
+        type = FoodGrain.objects.get(type = foodgrain)
+        print(type)
+        trans = TransactionSale.objects.filter(foodgrain = type)
         users = []
         for tran in trans:
             users.append(tran.buyer)
-        
+        print(users)
         cnt = Counter(users)
         users = list(set(users))
         users.sort(key = lambda i : cnt[i], reverse = True)
-        users = [{'name':user.name, "num": user.contact} for user in users]
-        return Response({'users':users})
+        users = [{'name':user.name, "contact": user.contact} for user in users]
+        return Response(users)
         
 
 
