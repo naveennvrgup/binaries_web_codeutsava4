@@ -394,16 +394,22 @@ def farmerDashboardGraphView(req):
 
 @api_view(['get'])
 def PastBidList(req):
-        user = req.user
-        bids = Bid.objects.filter(buyer = user)
-        bids = BidSerializer(bids,many=True).data
-        return Response(bids)
+    user = req.user
+    bids = Bid.objects.filter(buyer = user)
+    bids = BidSerializer(bids,many=True).data
+    return Response(bids)
 
-class FarmerPlacedbids(APIView):
-    def get(self, request):
-        user = request.user
-        placedbids = PlaceBid.objects.filter(farmer = user)
-        return Response(placedbids)
+@api_view(['get'])
+def FarmerPlacedbids(request,id):
+    user = request.user
+    placedbids = PlaceBid.objects.filter(bid = Bid.objects.get(id=id))
+    obj = [{
+        "bid":x.id,
+        'farmer':x.farmer.name,
+        'price':x.price,
+        'description':x.description
+    } for x in placedbids]
+    return Response(obj)
 
 
 
@@ -434,27 +440,31 @@ def FarmerResponseBidList(request, pk):
 
 @api_view(['GET'])
 def ApproveBid(request, pk):  
+    import random
     placedBid = PlaceBid.objects.get(id = pk)  
     bid = placedBid.bid
-    """transno = models.CharField(max_length=200,null=True, blank=True)
-    approved=models.BooleanField(default=False)
-    type=models.CharField(max_length=1,choices = CHOICES)
-    seller=models.ForeignKey(User,on_delete=models.CASCADE, related_name='sale_seller')
-    buyer=models.ForeignKey(User,on_delete=models.CASCADE, related_name='sale_buyer')
-    produce=models.ForeignKey(Produce, blank=True, null=True, on_delete=models.CASCADE)
-    foodgrain=models.ForeignKey(FoodGrain, blank=True, null=True, on_delete=models.CASCADE)
-    warehouse = models.ForeignKey(Warehouse, blank=True, null=True, on_delete=models.CASCADE)
-    quantity=models.FloatField()
-    price=models.FloatField()"""
-    transno = Random.randint(1, 10**6)
+
+    transno = random.randint(1, 10**6)
     approved = True
-    type = bid.type.name
+    type = bid.type.type
     seller = placedBid.farmer
     buyer = bid.buyer
     foodgrain = bid.type
-    quantity = placedBid.quantity
+    quantity = placedBid.bid.quantity
     price = placedBid.price
-    TransactionSale(transno = transno, approved =approved, type = type, seller =seller, buyer = buyer, foodgrain = foodgrain, quantity = quantity, price = price).save()
+    TransactionSale(
+        transno = transno, 
+        approved =approved, 
+        type = type, 
+        seller =seller, 
+        buyer = buyer, 
+        foodgrain = foodgrain, 
+        quantity = quantity, 
+        price = price).save()
+    
+    bid.isActive=False
+    bid.save()
+
     return Response("Transaction Done")
 
 @api_view(['post'])

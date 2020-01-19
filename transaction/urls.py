@@ -39,10 +39,10 @@ urlpatterns = [
     path('createBid/',views.createBid),
     path('pastBidsList/', views.PastBidList),
     path('farmerActiveBidList/', views.FarmerActiveBidList),
-    path('farmerPlacedBids/', views.FarmerPlacedbids),
+    path('farmerPlacedBids/<int:id>/', views.FarmerPlacedbids),
     path('farmerPlaceBid/', views.FarmerPlaceBid),
-    path('approveBid/pk', views.ApproveBid),
-    path('farmerResponseBideList/pk',views.FarmerResponseBidList)
+    path('approveBid/<int:pk>/', views.ApproveBid),
+    path('farmerResponseBideList/',views.FarmerResponseBidList)
 
     
 ]
