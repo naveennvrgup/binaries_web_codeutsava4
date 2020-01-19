@@ -54,7 +54,7 @@ class TransactionSale(models.Model):
     warehouse = models.ForeignKey(Warehouse, blank=True, null=True, on_delete=models.CASCADE)
     quantity=models.FloatField()
     price=models.FloatField()
-    invoice=models.URLField(max_length=300,default="")
+    # invoice=models.URLField(max_length=300,default="")
     # dprice=models.FloatField()
 
     def __str__(self):
