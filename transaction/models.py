@@ -32,7 +32,7 @@ class StorageTransaction(models.Model):
     farmerprice = models.FloatField(null=True, blank=True)
     date = models.DateField( default=datetime.date.today)
     valid = models.BooleanField(default=True)
-    invoice=models.URLField(max_length=300,default="")
+    invoice=models.FileField(null=True,blank=True)
 
     def __str__(self):
         return self.farmer.name+'-'+self.produce.type.type+'-'+str(self.quantity)
@@ -54,7 +54,7 @@ class TransactionSale(models.Model):
     warehouse = models.ForeignKey(Warehouse, blank=True, null=True, on_delete=models.CASCADE)
     quantity=models.FloatField()
     price=models.FloatField()
-    # invoice=models.URLField(max_length=300,default="")
+    invoice=models.FileField(null=True,blank=True)
     # dprice=models.FloatField()
 
     def __str__(self):

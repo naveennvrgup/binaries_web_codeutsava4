@@ -13,6 +13,8 @@ from collections import defaultdict, Counter
 import math
 
 
+
+
 class UserListView(generics.ListCreateAPIView):
 
     queryset = User.objects.all()
