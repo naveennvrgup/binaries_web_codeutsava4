@@ -83,7 +83,7 @@ def FoodGrainDetailView(req,pk):
     
     currfoodgrain = FoodGrain.objects.get(id=pk)
     produces = Produce.objects.filter(type = currfoodgrain)
-    warehouses = Warehouse.objects.filter(foodgrain=currfoodgrain)
+    # warehouses = Warehouse.objects.filter(foodgrain=currfoodgrain)
 
     result = []
 
@@ -98,6 +98,7 @@ def FoodGrainDetailView(req,pk):
         temp['farmer'] = UserSerializer(farmer).data
         temp['quantity'] = quantity
         temp['price'] = price
+        temp['produce_id'] = produce.pk
         result.append(temp)
 
     return Response(result)

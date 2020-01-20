@@ -273,8 +273,15 @@ def PlaceOrderView(req):
     
     foodgrain = FoodGrain.objects.get(id=req.data['foodgrain_id'])
     buyer = req.user
-    farmer = User.objects.get(contact=req.data['farmer_contact'])
+    print(req.data)
+    farmer = User.objects.filter(contact=req.data['farmer_contact'])[0]
     quantity = req.data['quantity']
+    prod_id = req.data['produce_id']
+    prod = Produce.objects.get(id=prod_id)
+
+    price = prod.price
+
+    
 
     ts = TransactionSale.objects.create(
         type= '1',
@@ -282,7 +289,7 @@ def PlaceOrderView(req):
         buyer = buyer,
         quantity = quantity,
         foodgrain = foodgrain,
-        price = foodgrain.price,
+        price = price,
     )
     obj = TransactionSaleSerializer(ts).data
     message = buyer.name+ " wants to buy "+str(2)+"kg of "+foodgrain.type+" from you. Contact- "+str(buyer.contact) 
@@ -444,7 +451,10 @@ def FarmerOrdersListView(req):
         data[i]['foodgraintype']=queryset[i].foodgrain.type
         data[i]['seller']=queryset[i].seller.name
         data[i]['buyer']=queryset[i].buyer.name
+        data[i]['price']=queryset[i].price
+        data[i]['quantity']=queryset[i].quantity
 
+    print(data)
     return Response(data)
 
 @api_view(['post'])
@@ -484,6 +494,7 @@ def ApproveFarmerOrderView(req,id):
 
     tsale.approved=True
     tsale.save()
+    send_sms(tsale.buyer.contact, "Your Order has been approved")
 
 
     return Response(True)
@@ -689,13 +700,17 @@ def FarmerResponseBidList(request, pk):
     bid = Bid.objects.get(id = pk)
     pbids = bid.placebid_set.all()
     pbids = PlaceBidSerializer(pbids,many=True).data
+    print(pbids)
     return Response(pbids)
 
 
 @api_view(['GET'])
 def ApproveBid(request, pk):  
     import random
-    placedBid = PlaceBid.objects.get(id = pk)  
+    print('a', pk)
+    print(PlaceBid.objects.all())
+    placedBid = PlaceBid.objects.get(id = int(pk))  
+
     bid = placedBid.bid
 
     transno = random.randint(1, 10**6)
@@ -748,14 +763,14 @@ def get_farmer_storage_warehouse(request):
 class DefCentreView(APIView):
     def get(self, request):
         id_ = 1
-        centre = Centre.objects.get(id = id_)
+        centre = Centre.objects.get(cid = id_)
         loc = Location.objects.filter(centre = centre)
         farms = [farm.id for farm in Farms.objects.all() if farm.location in loc]
         farmers = [Farms.objects.get(id = i).farmer.contact for i in farms]
         print(centre.def_crops)
-        message = "Centre : "+str(id_)+" is facing a shortage of " + ', '.join(centre.def_crops.all())
+        message = "Centre : "+str(id_)+" is facing a shortage of " + ', '.join([i.type for i in centre.def_crops.all()])+" \\n Your potential buyers are : Buyer23 contact : 9867543421 \\n Buyer56 contact :9876540981"
         for num in farmers:
-            #send_sms(num, message)
+            send_sms(num, message)
             print(num, message)
         return Response(message)
     # obj = BidSerializer(bid)

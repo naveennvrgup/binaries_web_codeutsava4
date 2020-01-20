@@ -123,9 +123,9 @@ graph.newEdge(center_5,center_4,{color: '#ff00ff'})
 
 function callapi(){
     fetch("http://127.0.0.1:8000/transaction/DefCentreView");
-    var centre = document.getElementById("c1");
+    var centre = document.getElementById("c3");
     centre.className += "alert alert-danger";
-    document.getElementById("c3").className = "alert alert-primary";
+    document.getElementById("c1").className = "alert alert-primary";
 }
 document.getElementById("myBtn").addEventListener("click", callapi);
 

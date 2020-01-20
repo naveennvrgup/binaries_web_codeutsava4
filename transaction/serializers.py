@@ -14,25 +14,30 @@ class BidSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class PlaceBidSerializer(serializers.ModelSerializer):
+    farmer = serializers.SerializerMethodField('get_farmer')
 
-    def create(self, valid_data):
-        placebid = PlaceBid(
-            price = valid_data['price'],
-            description = valid_data['description'],
-            bid = valid_data["bid"],
-            farmer = valid_data["farmer"]
+    # def get_farmer(self, pb):
+    #     return pb.farmer.name
 
-        )
-        placebid.save()
-        bid = valid_data["bid"]
-        bid.nbids+=1
-        bid.save()
+    # def create(self, valid_data):
+    #     placebid = PlaceBid(
+    #         price = valid_data['price'],
+    #         description = valid_data['description'],
+    #         bid = valid_data["bid"],
+    #         farmer = valid_data["farmer"]
 
-        return placebid
+    #     )
+    #     placebid.save()
+    #     bid = valid_data["bid"]
+    #     bid.nbids+=1
+    #     bid.save()
+    #     print(bid.id)
+
+    #     return placebid
 
     class Meta:
         model = PlaceBid
-        fields = "__all__"
+        fields = ["farmer","bid", "description","price"]
  
  
 
