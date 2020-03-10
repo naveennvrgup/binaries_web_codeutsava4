@@ -65,6 +65,7 @@ class Warehouse(models.Model):
     location=models.ForeignKey(Location,on_delete=models.CASCADE)
     free_space=models.FloatField()
     total_space=models.FloatField()
+    description = models.TextField(blank = True)
 
     def __str__(self):
         return self.owner.name

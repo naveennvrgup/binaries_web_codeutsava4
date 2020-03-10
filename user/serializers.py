@@ -39,7 +39,19 @@ class FarmsSerializer(serializers.ModelSerializer):
         fields = "__all__"
  
 
+class WarehouseDetailSerializer(serializers.ModelSerializer):
+    description = serializers.SerializerMethodField()
+
+    def get_description(self, obj):
+        return obj.description.split('$')
+
+    class Meta:
+        model = Warehouse
+        fields = "__all__"
+
+
 class WarehouseSerializer(serializers.ModelSerializer):
+
 
     class Meta:
         model = Warehouse

@@ -60,7 +60,7 @@ class WarehouseListView(generics.ListCreateAPIView):
 
 class WarehouseDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Warehouse.objects.all()
-    serializer_class = WarehouseSerializer
+    serializer_class = WarehouseDetailSerializer
 
 
 

@@ -776,3 +776,133 @@ class DefCentreView(APIView):
     # obj = BidSerializer(bid)
 
     # return Response(obj.data)
+
+
+
+
+####################################### Delivery Views ######################################
+
+
+
+class CreateDeliveryRequest(generics.ListCreateAPIView):
+    queryset = Delivery.objects.all()
+    serializer_class = DeliverySerializer
+
+class CreateDeliveryService(generics.ListCreateAPIView):
+    queryset = DeliveryService.objects.all()
+    serializer_class = DeliveryServiceSerializer
+
+class CreateTempDeliveryTransaction(generics.ListCreateAPIView):
+    queryset = TempDeliveryTransaction.objects.all()
+    serializer_class = TempDeliveryTransationSerializer
+
+
+@api_view(['post'])
+def createTempDeliveryTransaction(req):
+    print(req.data)
+    del_ord = Delivery.objects.get(id=req.data['del_id'])
+    print("adarsh")
+    del_serv = DeliveryService.objects.get(id=req.data['del_serv_id'])
+    print("adarsh")
+    cost = req.data['cost']
+    print("adarsh")
+
+    #send sms to farmer  Senedrnum = Farmernum
+    if del_ord.type == 'SD':
+        sender_num = del_ord.order_storage.farmer.contact
+        receiver_num = del_ord.order_storage.warehouse.owner.contact
+        print(sender_num, receiver_num)
+    else:
+        sender_num = del_ord.order_sale.seller.contact
+        reciever_num = del_ord.order_sale.buyer.contact
+        print(sender_num, reciever_num)
+    
+    obj = TempDeliveryTransaction.objects.create(delivery_ord=del_ord, delivery_service=del_serv,cost =cost)
+    res = TempDeliveryTransationSerializer(obj).data
+    return Response(res)
+
+
+
+
+@api_view(['get'])
+def lockDelivery(req, id):
+    temp = TempDeliveryTransaction.objects.get(id = id)
+    temp.delivery_ord.locked = True
+    temp.delivery_ord.save()
+    temp.valid = False
+    print("Your delivery prposal has been approb=ved", temp.delivery_service.owner.contact)
+    temp.save()
+    return Response("Delivery Locked")
+
+
+
+
+
+@api_view(['get'])
+def getNonLockedDelivery(req):
+    queryset = Delivery.objects.filter(locked = False)
+    res = DeliverySerializer(queryset, many = True).data
+    return Response(res)
+
+
+@api_view(['get'])
+def getWarehouseFromOwner(req, id):
+    user = User.objects.get(id=id)
+    query = Warehouse.objects.filter(owner = user)
+    res = WarehouseDetailSerializer(query, many=True).data
+    return Response(res)
+
+
+
+"""
+@api_view(['get'])
+def lockDelivery(req, id):
+    obj = Delivery.objects.get(id = id)
+    obj.locked = True
+    obj.save()
+"""
+
+
+
+
+"""
+
+@api_view(['post'])
+def createDeliveryRequest(request):
+    delivery_service = request.data['delivery_service']
+    type = request.data['type']
+    order_storage = request.data['order_storage']
+    order_sale = request.data['order_sale']
+    obj = Delivery.objects.create(delivery_service=delivery_service, 
+                                  type = type,
+                                  order_storage = order_storage,
+                                  order_sale = order_sale)
+    res = DeliverySerializer(obj).data
+    return Response(res)
+
+
+
+@api_view(['post'])
+def createDeliveryService(request):
+    loc = request.data['loc']
+    name = request.data['name']
+    branches = request.data['branches']
+    obj = Delivery.objects.create(loc = loc,
+                                  name = name,
+                                  branches = branches)
+    res = DeliveryServiceSerializer(obj).data
+    return Response(res)
+
+"""
+
+
+
+
+
+
+
+
+
+
+
+

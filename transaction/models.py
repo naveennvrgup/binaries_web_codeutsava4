@@ -100,3 +100,55 @@ class PlaceBid(models.Model):
 
     def __str__(self):
         return str(self.bid)
+
+
+
+#################################  Delivery Model  ##############################
+
+
+class DeliveryService(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    cur_loc = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="cur_loc")
+    name = models.CharField(max_length=50)
+    branches = models.ManyToManyField(Location, related_name="branches")
+
+class Delivery(models.Model):
+    delivery_service = models.ForeignKey(DeliveryService, on_delete=models.CASCADE, null = True, blank = True)
+    CHOICES=(
+                ('SD','Delivery for Storage'),
+                ('TD1','Delivery for Sale from Farmer'),
+                ('TD2','Delivery for Sale from Warehouse'),
+    )
+
+    type=models.CharField(max_length=3,choices=CHOICES )
+    order_storage = models.ForeignKey(StorageTransaction, on_delete=models.CASCADE, blank = True, null = True)
+    order_sale = models.ForeignKey(TransactionSale, on_delete=models.CASCADE, blank = True, null=True)
+    locked = models.BooleanField(default = False, null = True)
+    cost = models.IntegerField(blank = True, null = True)
+    #source_farmer = models.ForeignKey(User, on_delete=models.CASCADE, blank = True)
+    #source_warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, blank = True)
+    #destination_buyer = models.ForeignKey(User, on_delete=models.CASCADE, blank = True)
+    #destination_warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, blank = True)
+
+class TempDeliveryTransaction(models.Model):
+    delivery_ord = models.ForeignKey(Delivery, on_delete=models.CASCADE, null = True, blank = True)
+    delivery_service = models.ForeignKey(DeliveryService, on_delete=models.CASCADE, null = True, blank = True)
+    cost = models.IntegerField(blank = True, null = True)
+
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+

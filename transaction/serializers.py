@@ -121,3 +121,27 @@ class ProduceSerializer(serializers.ModelSerializer):
 
 
 
+
+
+class DeliveryServiceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DeliveryService
+        fields = "__all__"
+
+class DeliverySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Delivery
+        fields = "__all__"
+
+class TempDeliveryTransationSerializer(serializers.ModelSerializer):
+
+    
+
+    class Meta:
+        model = TempDeliveryTransaction
+        fields = "__all__"
+
+
+
