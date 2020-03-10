@@ -854,6 +854,28 @@ def getWarehouseFromOwner(req, id):
 
 
 
+
+class CreateNotification(generics.ListCreateAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+
+@api_view(['get'])
+def getNotification(req):
+    user = req.user
+    if 'timestamp' in req.data:
+        tm = req.data['timestamp']
+        query = Notification.objects.filter(timestamp__gte=str(tm))
+    else:
+        query = Notification.objects.all().order_by("-timestamp")
+       
+    
+    res = NotificationSerializer(query, many = True).data
+    return Response(res)
+
+
+
+
+
 """
 @api_view(['get'])
 def lockDelivery(req, id):

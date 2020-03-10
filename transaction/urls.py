@@ -58,7 +58,13 @@ urlpatterns = [
 
 
     ########################################
-    path('getWarehouseFromOwner/<int:id>', views.getWarehouseFromOwner)
+    path('getWarehouseFromOwner/<int:id>', views.getWarehouseFromOwner),
+
+
+    #################################################
+
+    path('notifications/', views.getNotification),
+    path('createNotification/', views.CreateNotification.as_view())
 
     
 ]

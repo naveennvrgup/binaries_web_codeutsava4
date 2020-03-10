@@ -137,11 +137,15 @@ class DeliverySerializer(serializers.ModelSerializer):
 
 class TempDeliveryTransationSerializer(serializers.ModelSerializer):
 
-    
-
     class Meta:
         model = TempDeliveryTransaction
         fields = "__all__"
 
 
 
+
+class NotificationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Notification
+        fields = "__all__"

@@ -139,7 +139,11 @@ class TempDeliveryTransaction(models.Model):
 
     
     
-
+######################## Notification ########################################
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    timestamp = models.DateTimeField(auto_now=True)
 
 
 
