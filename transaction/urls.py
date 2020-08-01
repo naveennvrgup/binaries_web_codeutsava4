@@ -48,12 +48,12 @@ urlpatterns = [
     path('getFarmerStoredWarehouse/', views.get_farmer_storage_warehouse),
     path('DefCentreView/',views.DefCentreView.as_view()),
 
-    #############
+    #########################################
 
     path('createDeliveryService/', views.CreateDeliveryService.as_view()),
     path('requestDelivery/', views.CreateDeliveryRequest.as_view() ),
-    path('getNonLockedDelivery', views.getNonLockedDelivery),
-    path('createTempDeliveryTransaction', views.createTempDeliveryTransaction),
+    path('getNonLockedDelivery/<int:id>', views.getNonLockedDelivery),
+    path('getLockedDelivery/<int:id>', views.getLockedDelivery),
     path('lockDelivery/<int:id>', views.lockDelivery),
 
 

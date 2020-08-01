@@ -53,6 +53,8 @@ class TransactionSale(models.Model):
     foodgrain=models.ForeignKey(FoodGrain, blank=True, null=True, on_delete=models.CASCADE)
     warehouse = models.ForeignKey(Warehouse, blank=True, null=True, on_delete=models.CASCADE)
     quantity=models.FloatField()
+    quantity_from_produce = models.FloatField(default=0)
+    quantity_from_warehouse = models.FloatField(default=0)
     price=models.FloatField()
     invoice=models.FileField(null=True,blank=True)
     # dprice=models.FloatField()
@@ -130,10 +132,7 @@ class Delivery(models.Model):
     #destination_buyer = models.ForeignKey(User, on_delete=models.CASCADE, blank = True)
     #destination_warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, blank = True)
 
-class TempDeliveryTransaction(models.Model):
-    delivery_ord = models.ForeignKey(Delivery, on_delete=models.CASCADE, null = True, blank = True)
-    delivery_service = models.ForeignKey(DeliveryService, on_delete=models.CASCADE, null = True, blank = True)
-    cost = models.IntegerField(blank = True, null = True)
+
 
 
 
@@ -151,8 +150,7 @@ class Notification(models.Model):
 
 
 
-
-
+######### New Delivery System ##################################################
 
 
 

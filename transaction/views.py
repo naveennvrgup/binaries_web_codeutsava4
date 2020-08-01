@@ -459,6 +459,9 @@ def FarmerOrdersListView(req):
 
 @api_view(['post'])
 def ApproveFarmerOrderView(req,id):
+
+
+
     tsale = req.user.sale_seller.get(id=int(id))
     get_from = req.data['get_from']
     quanity_to_delete = tsale.quantity
@@ -792,11 +795,9 @@ class CreateDeliveryService(generics.ListCreateAPIView):
     queryset = DeliveryService.objects.all()
     serializer_class = DeliveryServiceSerializer
 
-class CreateTempDeliveryTransaction(generics.ListCreateAPIView):
-    queryset = TempDeliveryTransaction.objects.all()
-    serializer_class = TempDeliveryTransationSerializer
 
 
+"""
 @api_view(['post'])
 def createTempDeliveryTransaction(req):
     print(req.data)
@@ -821,17 +822,15 @@ def createTempDeliveryTransaction(req):
     res = TempDeliveryTransationSerializer(obj).data
     return Response(res)
 
-
+"""
 
 
 @api_view(['get'])
 def lockDelivery(req, id):
-    temp = TempDeliveryTransaction.objects.get(id = id)
-    temp.delivery_ord.locked = True
-    temp.delivery_ord.save()
-    temp.valid = False
+    temp = Delivery.objects.get(id = id)
+    temp.locked = True
+    temp.save()    
     print("Your delivery prposal has been approb=ved", temp.delivery_service.owner.contact)
-    temp.save()
     return Response("Delivery Locked")
 
 
@@ -839,8 +838,18 @@ def lockDelivery(req, id):
 
 
 @api_view(['get'])
-def getNonLockedDelivery(req):
-    queryset = Delivery.objects.filter(locked = False)
+def getNonLockedDelivery(req, id):
+    del_serv = DeliveryService.objects.get(id = id)
+    queryset = Delivery.objects.filter(locked = False, delivery_service = del_serv)
+    res = DeliverySerializer(queryset, many = True).data
+    return Response(res)
+
+
+
+@api_view(['get'])
+def getLockedDelivery(req, id):
+    del_serv = DeliveryService.objects.get(id = id)
+    queryset = Delivery.objects.filter(locked = True, delivery_service = del_serv)
     res = DeliverySerializer(queryset, many = True).data
     return Response(res)
 
