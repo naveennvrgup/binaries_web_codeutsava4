@@ -18,14 +18,16 @@ urlpatterns = [
     path('', views.UserListView.as_view()),
     path('<int:pk>/', views.UserDetailView.as_view()),
     path("farmer-detail/", views.FarmerDetailView),
-    
+
     path('rest-auth/', include('rest_auth.urls')), #/login and /logout
-    
+
     path('farms/', views.FarmsListView.as_view()),
     path('farms/<int:pk>/', views.FarmsDetailView.as_view()),
 
     path('foodgrains/', views.FoodGrainListView.as_view()),
     path('foodgrains/<int:pk>/', views.FoodGrainDetailView),
+    path('foodgrains/<str:category>/',views.GrainCategory.as_view()),
+    path('foodgrain/category/',views.FoodGrainCategory.as_view()),
 
     path('warehouse/', views.WarehouseListView.as_view()),
     path('warehouse/<int:pk>/', views.WarehouseDetailView.as_view()),
@@ -42,10 +44,10 @@ urlpatterns = [
     path('getWarehouseUser/<int:pk>/', views.getWarehouseUser.as_view()),
 
     path('getFarmerAI/', views.FarmerAI.as_view()),
-    
-    
+
+
     path('findWarehouse/<int:produceid>/<int:quantity>', views.findWareHouse.as_view()),
-    path('notifications/', views.ListNotfications),    
+    path('notifications/', views.ListNotfications),
 
     path('delay/',views.delayView),
     path('get_potential_buyers/<str:foodgrain>/',views.PotentialBuyers.as_view()),

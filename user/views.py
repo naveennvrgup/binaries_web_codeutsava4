@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated 
+from rest_framework.permissions import IsAuthenticated
 from collections import defaultdict, Counter
 import math
 
@@ -33,7 +33,7 @@ def FarmerDetailView(req):
     userObj=UserSerializer(req.user).data
     userObj.pop("password")
     return Response(userObj)
-        
+
 
 
 
@@ -69,7 +69,30 @@ class FoodGrainListView(generics.ListCreateAPIView):
     queryset = FoodGrain.objects.all()
     serializer_class = FoodGrainSerializer
 
+class GrainCategory(APIView):
+    def get(self,request,category):
+        queryset=FoodGrain.objects.filter(category=category)
+        return Response({'items':[g.id for g in queryset]})
 
+class FoodGrainCategory(APIView):
+    def get(self,request):
+        grains=FoodGrain.objects.filter(category="GRA")
+        fruits=FoodGrain.objects.filter(category="FRU")
+        vegetables=FoodGrain.objects.filter(category="VEG")
+        grain_List=[]
+        fruit_List=[]
+        vegetable_List=[]
+        category={}
+
+        for f in fruits:
+            fruit_List.append(f.type)
+        for g in grains:
+            grain_List.append(g.type)
+        for v in vegetables:
+            vegetable_List.append(v.type)
+
+
+        return Response({'Grains': grain_List, 'Fruits': fruit_List, 'Vegetables': vegetable_List})
 
 @api_view(['get'])
 def FoodGrainDetailView(req,pk):
@@ -80,7 +103,7 @@ def FoodGrainDetailView(req,pk):
     res_quantity=defaultdict(int)
     res_price=defaultdict(int)
     res_farmers = {}
-    
+
     currfoodgrain = FoodGrain.objects.get(id=pk)
     produces = Produce.objects.filter(type = currfoodgrain)
     # warehouses = Warehouse.objects.filter(foodgrain=currfoodgrain)
@@ -104,14 +127,14 @@ def FoodGrainDetailView(req,pk):
     return Response(result)
 
 
-    
+
     # for x in produces:
     #     for y in x:
     #         key=str(y.farmer.contact)
     #         res_quantity[key]+=y.quantity
     #         res_quantity[key]=y.price
     #         res_farmers[key]=UserSerializer(y.farmer).data
-    
+
     # return Response([{
     #     'farmer':res_farmers[x],
     #     'quantity':res_quantity[x],
@@ -150,7 +173,7 @@ class getWarehouse(APIView):
         queryset = StorageTransaction.objects.filter(farmer = farmer)
         return Response({'warehouses':[f.warehouse.id for f in queryset]})
 
-    
+
 
 class getWarehouseUser(APIView):
     def get(self, request, pk):
@@ -164,9 +187,9 @@ class findWareHouse(APIView):
         produceid = int(produceid)
         produce = Produce.objects.get(id=produceid)
         foodgrain = produce.type
-        src = produce.location 
+        src = produce.location
         warehouse = Warehouse.objects.filter(foodgrain=foodgrain).filter(free_space__gte=quantity)
-        
+
         #Euclidean
         distances = []
         i=0
@@ -236,7 +259,7 @@ class FarmerAI(APIView):
 
         return Response({'rec_crops' : [i.type for i in rec_crops.all()], 'def_crops' : [i.type for i in def_crops.all()]})
 
-    
+
 
 @api_view(['get'])
 def ListNotfications(req):
@@ -244,7 +267,7 @@ def ListNotfications(req):
     obj = NotificationSerializer(queryset,many=True)
 
     return Response(obj.data)
-    
+
 
 @api_view(['get'])
 def delayView(req):
@@ -276,7 +299,7 @@ def GraphyView(req):
         farms_list.append("Farm : "+str(i.id))
 
     # print('a')
-    
+
     labels = set(user_list + centre_list + warehouse_list + farms_list)
 
     conn =[]
@@ -306,13 +329,13 @@ def GraphyView(req):
             centre_farmer.append(("Centre : " + str(centre.id), farm.farmer.name))
 
         for trans in StorageTransaction.objects.all():
-            farmer_warehouse.append((trans.farmer.name, trans.warehouse.name)) 
+            farmer_warehouse.append((trans.farmer.name, trans.warehouse.name))
 
     conn = list(set(farm_farmer + centre_farmer + farmer_warehouse))
     return Response({"labels":labels, "connections": conn})
 
-        
-            
+
+
 
 
 class PotentialBuyers(APIView):
@@ -329,7 +352,6 @@ class PotentialBuyers(APIView):
         users.sort(key = lambda i : cnt[i], reverse = True)
         users = [{'name':user.name, "contact": user.contact} for user in users]
         return Response(users)
-        
 
 
 
@@ -338,8 +360,9 @@ class PotentialBuyers(APIView):
 
 
 
-    
-        
+
+
+
 
 
 
@@ -380,7 +403,7 @@ class PotentialBuyers(APIView):
 #                 labels.add(y.name+' '+y.dob)
 #                 farmers.append(y)
 #                 connections.append([x.cid,y.name,green])
-    
+
 #     for x in farmers:
 #         i=1
 #         for y in x.farms:
@@ -401,7 +424,7 @@ class PotentialBuyers(APIView):
 #     })
 #         labels.add(x.cid)
 #         connections.append(['server',x.cid,red])
-        
+
 
 #     return Response({
 #         'connections': connections,

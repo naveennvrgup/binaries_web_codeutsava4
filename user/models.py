@@ -7,7 +7,13 @@ from django.contrib.auth.models import AbstractUser
 class FoodGrain(models.Model):
     type=models.CharField(max_length=50)
     life=models.IntegerField()
-    price=models.IntegerField(default=17) 
+    price=models.IntegerField(default=17)
+    CHOICES=(
+        ('GRA','Grains'),
+        ('FRU','Fruits'),
+        ('VEG','Vegetables'),
+        )
+    category=models.CharField(max_length=3,choices=CHOICES,blank=True,null=True)
 
     def __str__(self):
         return self.type
