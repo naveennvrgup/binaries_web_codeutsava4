@@ -50,8 +50,9 @@ urlpatterns = [
 
     #########################################
 
+    path('get_delivery_list/', views.get_delivery_list),
     path('createDeliveryService/', views.CreateDeliveryService.as_view()),
-    path('requestDelivery/', views.CreateDeliveryRequest.as_view() ),
+    path('requestDelivery/', views.request_delivery ),
     path('getNonLockedDelivery/<int:id>', views.getNonLockedDelivery),
     path('getLockedDelivery/<int:id>', views.getLockedDelivery),
     path('lockDelivery/<int:id>', views.lockDelivery),

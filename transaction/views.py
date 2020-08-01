@@ -825,6 +825,74 @@ def createTempDeliveryTransaction(req):
 """
 
 
+
+def get_distance(loc1, loc2):
+    return ((loc1.xloc-loc2.xloc)**2 + (loc1.yloc-loc2.yloc)**2)**0.5
+
+
+@api_view(['POST'])
+def get_delivery_list(req):
+    choice = req.data['choice']
+    dest = req.data['destinationId']
+    print(choice, dest)
+    if choice == 'TD':
+        src = req.user
+        dest = User.objects.get(id = int(dest))#farmer
+        dest_loc = dest.farms.all()[0].location
+        src_loc = src.location
+    else:
+        src = req.user#farnmer
+        dest = Warehouse.objects.get(id = int(dest))
+        src_loc = src.farms.all()[0].location
+        dest_loc = dest.location
+    dist = get_distance(src_loc, dest_loc)
+
+    delv_serv = DeliveryService.objects.all()
+    print(delv_serv)
+    res = []
+    for i in delv_serv:
+        res.append({
+            "id":i.id,
+            "name":i.name,
+            "owner":i.owner.name,
+            "basePrice":i.base_price,
+            "totalPrice":i.base_price*dist,
+
+        })
+    
+    res.sort(key = lambda i:i['totalPrice'])
+    print({"list":res})
+    return Response({"list":res, "choice":choice, "destinationId":dest})
+
+
+@api_view(['POST'])
+def request_delivery(req):
+    choice = req.data['choice']
+    src = req.data['sourceId']
+    dest = req.data['destinationId']
+    cost = float(req.data['cost'])
+    del_id = int(req.data['serviceId'])
+    del_srv = DeliveryService.objects.get(id = del_id)
+    print(choice, src, dest)
+    if choice == 'TD':
+        src = User.objects.get(id = int(src))
+        dest = User.objects.get(id = int(dest))
+        Delivery.object.create(type = choice, cost = cost, delivery_service = del_srv, source_farmer = src, destination_buyer = dest)
+    else:
+        src = User.objects.get(id = int(src))
+        dest = Warehouse.objects.get(id = int(dest))
+        Delivery.objects.create(type = choice, cost = cost, delivery_service = del_srv, source_farmer = src, destination_warehouse = dest)
+    
+    return Response({"message":"successful", "choice":choice})
+
+    
+
+
+
+
+
+
+
 @api_view(['get'])
 def lockDelivery(req, id):
     temp = Delivery.objects.get(id = id)
