@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Produce,StorageTransaction,TransactionSale,Bid,PlaceBid, DeliveryService,  Notification
+from .models import Produce,StorageTransaction,TransactionSale,Bid,PlaceBid, DeliveryService,  Notification, Delivery
 # Register your models here.
 #class ProductAdmin(admin.ModelAdmin):
  #   list_display = ('id', 'name', 'venue', 'date','time')
@@ -9,6 +9,7 @@ from .models import Produce,StorageTransaction,TransactionSale,Bid,PlaceBid, Del
 
 
 admin.site.register(DeliveryService)
+admin.site.register(Delivery)
 admin.site.register(Notification)
 
 class ProduceAdmin(admin.ModelAdmin):
