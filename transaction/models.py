@@ -39,6 +39,14 @@ class StorageTransaction(models.Model):
         return self.farmer.name+'-'+self.produce.type.type+'-'+str(self.quantity)
 
 
+class OrderDetails(models.Model):
+    verified = models.IntegerField(default=0)
+    in_transit = models.BooleanField(default=False)
+    delivered =  models.BooleanField(default=False)
+    reached = models.BooleanField(default = False)
+    otp = models.IntegerField(default= 0)
+    is_delivery_applicable = models.BooleanField(default=False)
+
 class TransactionSale(models.Model):
     CHOICES = (
         ("1", "From Produce"),
@@ -58,6 +66,8 @@ class TransactionSale(models.Model):
     quantity_from_warehouse = models.FloatField(default=0)
     price=models.FloatField()
     invoice=models.FileField(null=True,blank=True)
+    is_delivery_associated = models.BooleanField(default=False)
+    order_details = models.ForeignKey(OrderDetails, null = True, blank = True, on_delete=models.CASCADE)
     # dprice=models.FloatField()
 
     def __str__(self):

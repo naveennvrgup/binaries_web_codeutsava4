@@ -4,6 +4,7 @@ from django.http import HttpResponse
 import requests
 
 def send_sms(contact, message):
+    print(contact, message, "called")
 
     url = "https://www.fast2sms.com/dev/bulk"
     querystring = {

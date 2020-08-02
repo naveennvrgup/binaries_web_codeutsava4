@@ -16,6 +16,8 @@ from rest_framework.permissions import IsAuthenticated
 from collections import defaultdict
 from .sms import send_sms
 from django.core.files import File
+from django.template.response import TemplateResponse
+
 
 from rest_framework import status
 import traceback
@@ -291,13 +293,21 @@ def PlaceOrderView(req):
         quantity = quantity,
         foodgrain = foodgrain,
         price = price,
+        order_details = OrderDetails.objects.create(),
     )
     obj = TransactionSaleSerializer(ts).data
     message = buyer.name+ " wants to buy "+str(2)+"kg of "+foodgrain.type+" from you. Contact- "+str(buyer.contact) 
-    
+
     #send_sms(farmer.contact, message)
 
     return Response(obj)
+
+
+class OrderDetailsUpdateView(generics.UpdateAPIView):
+    queryset = OrderDetails.objects.all()
+    serializer_class = OrderDetailsSerializer
+
+
 
 class TotalBidListView(generics.ListCreateAPIView):
     queryset = Bid.objects.all()
@@ -629,9 +639,9 @@ def message(request):
     else:
         arr = message.split(' ')
         mess = gen_mess(user,arr)
-        send_sms(newcontact,mess)
+        #send_sms(newcontact,mess)
         print(user)
-        print(message)
+        print(mess)
     return Response({'message':message})
 
 
@@ -1043,10 +1053,42 @@ def createDeliveryService(request):
 
 
 
+def delivery_admin(request, pk):
+    return TemplateResponse(request, 'mytemplate.html', dict({"pk":pk}))
+
+@api_view(["POST"])
+def update_detail(req, pk):
+    obj = OrderDetails.objects.get(pk = pk)
+    obj.verified = 1 if req.data['verified']=='1' else 0
+    obj.in_transit = True if req.data['in_transit']=='1' else False
+    obj.delivered = True if req.data['delivered']=='1' else False
+    obj.reached = True if req.data['reached']=='1' else False
+
+    obj.save()
+    if obj.reached:
+        otp = random.randint(1001, 9999)
+        obj.otp = otp
+        obj.save()
+        send_sms("7024901272", "OTP is" + str(otp))
+        return TemplateResponse(req, 'otp_delv.html', dict({"pk":pk}))
+    else:
+        return TemplateResponse(req, 'success.html', dict({"pk":pk}))
+
+
+@api_view(["POST"])
+def match_otp(req, pk):
+    obj = OrderDetails.objects.get(pk = pk)
+    if obj.otp == int(req.data['otp']):
+        obj.delivered = True
+        obj.save()
+        return TemplateResponse(req, 'success.html', dict({"pk":pk}))
+    else:
+        return TemplateResponse(req, 'failure.html', dict({"pk":pk}))
 
 
 
-
+def enter_otp(req, pk):
+    return TemplateResponse(req, 'otp.html', dict({"pk":pk}))
 
 
 

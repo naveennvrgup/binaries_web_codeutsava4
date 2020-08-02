@@ -1,0 +1,36 @@
+<html>
+    <head></head>
+    <body>
+        <form method = "POST" action = "/transaction/update_detail/{{pk}}">{% csrf_token %}
+            <label for="verified">Did you verify the Order </label>
+            <select name="verified" id="verified">
+            <option value="0">NO</option>
+            <option value="1">YES</option>
+            </select>
+
+
+            <label for="in_transit">Is the order dispatched</label>
+            <select name="in_transit" id="in_transit">
+            <option value="0">NO</option>
+            <option value="1">YES</option>
+            </select>
+            
+
+            <label for="reached">Order Reached</label>
+            <select name="reached" id="reached">
+            <option value="0">NO</option>
+            <option value="1">YES</option>
+            </select>
+
+            <label for="delivered">Is the Order Delivered</label>
+            <select name="delivered" id="delivered">
+            <option value="0">NO</option>
+            <option value="1">YES</option>
+            </select>
+            
+            <input type = "submit">
+            
+
+        </form>
+    </body>
+</html>

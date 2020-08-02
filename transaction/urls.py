@@ -55,6 +55,10 @@ urlpatterns = [
     path('getNonLockedDelivery/<int:id>', views.getNonLockedDelivery),
     path('getLockedDelivery/<int:id>', views.getLockedDelivery),
     path('lockDelivery/<int:id>', views.lockDelivery),
+    path('deliveryAdmin/<int:pk>', views.delivery_admin),
+    path('update_detail/<int:pk>', views.update_detail),
+    path('enter_otp/<int:pk>', views.enter_otp),
+    path('match_otp/<int:pk>', views.match_otp),
 
 
     ########################################

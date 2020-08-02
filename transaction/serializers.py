@@ -121,7 +121,11 @@ class ProduceSerializer(serializers.ModelSerializer):
 
 
 
+class OrderDetailsSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = OrderDetails
+        fields = "__all__"
 
 class DeliveryServiceSerializer(serializers.ModelSerializer):
 
