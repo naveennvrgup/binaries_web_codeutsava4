@@ -270,7 +270,8 @@ def save_profile(sender, instance, **kwargs):
 
 @api_view(['post'])
 def PlaceOrderView(req):
-    
+    print("foodgrainid",req.data['foodgrain_id'])
+    print(req.data)
     foodgrain = FoodGrain.objects.get(id=req.data['foodgrain_id'])
     buyer = req.user
     print(req.data)
@@ -293,7 +294,8 @@ def PlaceOrderView(req):
     )
     obj = TransactionSaleSerializer(ts).data
     message = buyer.name+ " wants to buy "+str(2)+"kg of "+foodgrain.type+" from you. Contact- "+str(buyer.contact) 
-    send_sms(farmer.contact, message)
+    
+    #send_sms(farmer.contact, message)
 
     return Response(obj)
 
@@ -350,10 +352,16 @@ def report_produce(request):
 
     location = farmer.farms.all()[0].location
     print('reached')
-
-    produce = Produce.objects.create(farmer=farmer,type=foodgrain,grade=grade,quantity=quantity,location=location,price=price)
-    produce.save()
-    poduceserializer = ProduceSerializer(produce).data
+    old_produce = Produce.objects.filter(farmer=farmer,type=foodgrain)
+    if old_produce:
+        old_produce = old_produce[0]
+        old_produce.quantity += quantity
+        old_produce.save()
+        poduceserializer = ProduceSerializer(old_produce).data
+    else:
+        produce = Produce.objects.create(farmer=farmer,type=foodgrain,grade=grade,quantity=quantity,location=location,price=price)
+        produce.save()
+        poduceserializer = ProduceSerializer(produce).data
     return Response(poduceserializer)
 
 class StorageTransactionListView(generics.ListCreateAPIView):
@@ -367,28 +375,33 @@ def createStorageTransaction(request):
     farmer = request.user
     quantity = request.data['quantity']
     cost = warehouse.price
+    if quantity <= produce.quantity and quantity <= warehouse.free_space:
+
     # transno = random.randint(1,1000000)
-    storagetransaction = StorageTransaction.objects.create(
-        warehouse = warehouse,
-        produce = produce,
-        farmer = farmer,
-        quantity = quantity,
-        cost = cost,
-        farmerprice = produce.price
-    )
-    storagetransaction.save()
+        storagetransaction = StorageTransaction.objects.create(
+            warehouse = warehouse,
+            produce = produce,
+            farmer = farmer,
+            quantity = quantity,
+            cost = cost,
+            farmerprice = produce.price,
+            foodgrain = produce.type
+        )
+        storagetransaction.save()
 
-    produce.quantity -= quantity
-    produce.save()
+        produce.quantity -= quantity
+        produce.save()
 
-    warehouse.free_space -= quantity
-    warehouse.save()
-    print('saved')
+        warehouse.free_space -= quantity
+        warehouse.save()
+        print('saved')
 
-    # data = StorageTransactionSerializer(storagetransaction).data
-    # print(data)
+        # data = StorageTransactionSerializer(storagetransaction).data
+        # print(data)
 
-    return Response({"flag":True,}, status=status.HTTP_200_OK)
+        return Response({"flag":True,}, status=status.HTTP_200_OK)
+    else:
+        return Response({"flag":False, "message":"Not enough produce or insufficient space in warehouse"})
 
 @api_view(['get'])
 @permission_classes([IsAuthenticated])
@@ -433,12 +446,11 @@ class ApproveOrder(APIView):
 def BuyerOrdersListView(req):
     queryset = [x for x in req.user.sale_buyer.all()]
     data =TransactionSaleSerializer(queryset,many=True).data
-
     for i in range(len(queryset)):
-        data[i]['foodgraintype']=queryset[0].foodgrain.type
-        data[i]['seller']=queryset[0].seller.name
-        data[i]['buyer']=queryset[0].buyer.name
-
+        data[i]['foodgraintype']=queryset[i].foodgrain.type
+        data[i]['seller']=queryset[i].seller.name
+        data[i]['buyer']=queryset[i].buyer.name
+    print(data)
     return Response(data)
 
 
@@ -460,44 +472,72 @@ def FarmerOrdersListView(req):
 @api_view(['post'])
 def ApproveFarmerOrderView(req,id):
 
-
-
     tsale = req.user.sale_seller.get(id=int(id))
     get_from = req.data['get_from']
-    quanity_to_delete = tsale.quantity
+    quantity_to_delete = tsale.quantity
+    print(req)
+    produce = Produce.objects.filter(type = tsale.foodgrain)
+    if produce:
+        produce = produce[0]
+    else:
+        produce = None  
 
-    produce = req.user.produce.all()
-    produce = produce[0] if produce else None
+    
+    strans = StorageTransaction.objects.filter(farmer=tsale.seller, foodgrain = tsale.foodgrain)
+    print(strans)
+    if strans:
+        strans = strans[0]
+    else:
+        strans = None
 
-    strans = req.user.storagetransaction_set.all()
-    strans = strans[0] if  strans else None
 
-    if get_from=='produce' and produce:
-        tsale.produce = produce
-        temp = min(produce.quantity,quanity_to_delete)
-        quanity_to_delete -= temp
-        produce.quantity -= temp
-        produce.save()
+    if get_from=='produce':
+        if produce:
+            if produce.quantity >= quantity_to_delete:
+                produce.quantity -= quantity_to_delete
+                produce.save()
+            else:
+                quantity_to_delete -= produce.quantity
+                produce.quantity = 0
+                produce.save()
+                produce.delete()
+                if strans.quantity >= quantity_to_delete:
+                    strans.quantity -= quantity_to_delete
+                    strans.save()
+                else:
+                    return Response({"message": "Not enough grain available", "flag":False})
+        else:
+            
+            if strans.quantity >= quantity_to_delete:
+                strans.quantity -= quantity_to_delete
+                strans.save()
+                if strans.quantity == 0:
+                    strans.delete()
+            else:
+                return Response({"message": "Not enough grain available", "flag":False})
 
-        if quanity_to_delete and warehouse:
-            strans.quantity -= quanity_to_delete
+    else:
+        if strans.quantity >= quantity_to_delete:
+            strans.quantity -= quantity_to_delete
             strans.save()
+        else:
+            quantity_to_delete -= strans.quantity
+            strans.delete()
+            if produce and produce.quantity >= quantity_to_delete:
+                produce.quantity -= quantity_to_delete
+                produce.save()
+                if produce.quantity == 0:
+                    produce.delete()
 
-    elif strans:
-        tsale.warehouse = strans.warehouse
-        temp = min(strans.quantity,quanity_to_delete)
-        quanity_to_delete -= temp
-        strans.quantity -= temp
-        strans.save()
 
-        if quanity_to_delete and produce:
-            produce.quantity -= quanity_to_delete
-            produce.save()
+            else:
+                return Response({"message":"Not enough available"})
 
 
     tsale.approved=True
     tsale.save()
-    send_sms(tsale.buyer.contact, "Your Order has been approved")
+
+    #send_sms(tsale.buyer.contact, "Your Order has been approved")
 
 
     return Response(True)
@@ -506,6 +546,7 @@ def ApproveFarmerOrderView(req,id):
 @api_view(['get'])
 def RejectFarmerOrderView(req,id):
     req.user.sale_seller.get(id=int(id)).delete()
+    #send_sms(req.user.sale_buyer.contact, "Your Order has been approved")
     return Response(True)
 
 
@@ -834,12 +875,15 @@ def get_distance(loc1, loc2):
 def get_delivery_list(req):
     choice = req.data['choice']
     dest = req.data['destinationId']
+    farmerContact = req.data['farmerContact']
     print(choice, dest)
     if choice == 'TD':
         src = req.user
-        dest = User.objects.get(id = int(dest))#farmer
+        print(src)
+        dest = User.objects.get(contact=farmerContact)#farmer
         dest_loc = dest.farms.all()[0].location
         src_loc = src.location
+        req.data['destinationId'] = dest.id
     else:
         src = req.user#farnmer
         dest = Warehouse.objects.get(id = int(dest))
@@ -852,8 +896,8 @@ def get_delivery_list(req):
     res = []
     for i in delv_serv:
         res.append({
-            "id":i.id,
-            "name":i.name,
+            "deliveryServiceId":i.id,
+            "deliveryServiceName":i.name,
             "owner":i.owner.name,
             "basePrice":i.base_price,
             "totalPrice":i.base_price*dist,
@@ -861,28 +905,30 @@ def get_delivery_list(req):
         })
     
     res.sort(key = lambda i:i['totalPrice'])
-    print({"list":res})
-    return Response({"list":res, "choice":choice, "destinationId":dest})
-
+    print({"deliveryServiceList":res, "choice":choice, "destinationId":req.data['destinationId']})
+    return Response({"deliveryServiceList":res, "choice":choice, "destinationId":req.data['destinationId']})
 
 @api_view(['POST'])
 def request_delivery(req):
+    print(req.data)
     choice = req.data['choice']
-    src = req.data['sourceId']
+    src = req.user
     dest = req.data['destinationId']
     cost = float(req.data['cost'])
     del_id = int(req.data['serviceId'])
     del_srv = DeliveryService.objects.get(id = del_id)
     print(choice, src, dest)
     if choice == 'TD':
-        src = User.objects.get(id = int(src))
+        
         dest = User.objects.get(id = int(dest))
-        Delivery.object.create(type = choice, cost = cost, delivery_service = del_srv, source_farmer = src, destination_buyer = dest)
+        deliv = Delivery.objects.create(type = choice, cost = cost, delivery_service = del_srv, source_farmer = dest, destination_buyer = src)
+        deliv.save()
+        print("success")
     else:
-        src = User.objects.get(id = int(src))
         dest = Warehouse.objects.get(id = int(dest))
-        Delivery.objects.create(type = choice, cost = cost, delivery_service = del_srv, source_farmer = src, destination_warehouse = dest)
-    
+        deliv = Delivery.objects.create(type = choice, cost = cost, delivery_service = del_srv, source_farmer = src, destination_warehouse = dest)
+        deliv.save()
+        print("success")
     return Response({"message":"successful", "choice":choice})
 
     

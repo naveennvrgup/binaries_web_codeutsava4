@@ -37,6 +37,7 @@ class User(AbstractUser):
         ('DVR', 'Delivery Partner'),
     )
     role=models.CharField(max_length=3,choices=CHOICES)
+    location = models.ForeignKey(Location, blank = True, null = True, on_delete = models.CASCADE)
 
     def __str__(self):
         return self.name

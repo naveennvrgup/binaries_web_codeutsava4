@@ -31,13 +31,13 @@ class CustomUserAdmin(UserAdmin):
     UserAdmin.add_fieldsets += (
         (None, {
             'classes': ('wide',),
-            'fields': ('name','contact', 'address', 'city','state', 'dob','adhaar','role')}
+            'fields': ('name','contact', 'address', 'city','state', 'dob','adhaar','role', 'location')}
         ),
     )
     UserAdmin.fieldsets += (
         (None, {
             'classes': ('wide',),
-            'fields': ('name','contact', 'address', 'city','state', 'dob','adhaar','role')}
+            'fields': ('name','contact', 'address', 'city','state', 'dob','adhaar','role', 'location')}
         ),
     )
     # list_display = ['email','contact','user_type','otp', 'bquiz_score', 'verified']

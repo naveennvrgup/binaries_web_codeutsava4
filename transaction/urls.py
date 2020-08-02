@@ -28,7 +28,6 @@ urlpatterns = [
     path('storage_transaction/', views.StorageTransactionListView.as_view()),
     path('transaction_sale/', views.TransactionSaleListView),
     path('produce_filter/', views.ProduceListFilter.as_view()),
-    path('approveOrder/<int:pk>/', views.ApproveOrder.as_view()),
     path('message/', views.message),
     path('getCenterDetails/<int:pk>', views.GetCenterDetails.as_view()),
     path('report_produce/',views.report_produce),
@@ -50,7 +49,7 @@ urlpatterns = [
 
     #########################################
 
-    path('get_delivery_list/', views.get_delivery_list),
+    path('getDeliveryServiceList/', views.get_delivery_list),
     path('createDeliveryService/', views.CreateDeliveryService.as_view()),
     path('requestDelivery/', views.request_delivery ),
     path('getNonLockedDelivery/<int:id>', views.getNonLockedDelivery),

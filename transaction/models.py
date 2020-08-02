@@ -27,6 +27,7 @@ class StorageTransaction(models.Model):
     warehouse=models.ForeignKey(Warehouse,on_delete=models.CASCADE)
     farmer = models.ForeignKey(User,on_delete=models.CASCADE)
     produce=models.ForeignKey(Produce,on_delete=models.CASCADE)
+    foodgrain=models.ForeignKey(FoodGrain, blank=True, null=True, on_delete=models.CASCADE)
     quantity = models.FloatField()
     cost = models.FloatField()
     farmerprice = models.FloatField(null=True, blank=True)
