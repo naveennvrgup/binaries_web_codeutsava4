@@ -1,36 +1,60 @@
 <html>
-    <head></head>
-    <body>
-        <form method = "POST" action = "/transaction/update_detail/{{pk}}">{% csrf_token %}
-            <label for="verified">Did you verify the Order </label>
-            <select name="verified" id="verified">
-            <option value="0">NO</option>
-            <option value="1">YES</option>
-            </select>
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body style="background: #f3f3f3;">
+    <div class="d-flex justify-content-center">
+        <div class="p-5 m-5"
+            style="background: white;box-shadow: black 3px 6px 30px -20px; border-radius: 10px; width: 400px;">
+
+            <form method="POST" action="/transaction/update_detail/{{pk}}">
+                <div class="d-none">
+                    {% csrf_token %}
+                </div>
+                <div class="form-group">
+                    <label for="verified">Did you verify the Order </label>
+                    <select name="verified" class="custom-select" id="verified">
+                        <option value="0">NO</option>
+                        <option value="1">YES</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="in_transit">Is the order dispatched</label>
+                    <select class="custom-select" name="in_transit" id="in_transit">
+                        <option value="0">NO</option>
+                        <option value="1">YES</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reached">Order Reached</label>
+                    <select class="custom-select" name="reached" id="reached">
+                        <option value="0">NO</option>
+                        <option value="1">YES</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="delivered">Is the Order Delivered</label>
+                    <select class="custom-select" name="delivered" id="delivered">
+                        <option value="0">NO</option>
+                        <option value="1">YES</option>
+                    </select>
+                </div>
+
+                <div class="text-center">
+                    <input class="btn btn-primary" type="submit">
+                </div>
 
 
-            <label for="in_transit">Is the order dispatched</label>
-            <select name="in_transit" id="in_transit">
-            <option value="0">NO</option>
-            <option value="1">YES</option>
-            </select>
-            
+            </form>
 
-            <label for="reached">Order Reached</label>
-            <select name="reached" id="reached">
-            <option value="0">NO</option>
-            <option value="1">YES</option>
-            </select>
+        </div>
+    </div>
+</body>
 
-            <label for="delivered">Is the Order Delivered</label>
-            <select name="delivered" id="delivered">
-            <option value="0">NO</option>
-            <option value="1">YES</option>
-            </select>
-            
-            <input type = "submit">
-            
-
-        </form>
-    </body>
 </html>
