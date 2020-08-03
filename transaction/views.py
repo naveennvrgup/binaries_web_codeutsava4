@@ -296,9 +296,9 @@ def PlaceOrderView(req):
         order_details = OrderDetails.objects.create(),
     )
     obj = TransactionSaleSerializer(ts).data
-    message = buyer.name+ " wants to buy "+str(2)+"kg of "+foodgrain.type+" from you. Contact- "+str(buyer.contact) 
+    message = buyer.name+ " wants to buy "+str(ts.quantity)+"kg of "+foodgrain.type+" from you. Contact- "+str(buyer.contact) +". Order id is : "+str(ts.id)
 
-    #send_sms(farmer.contact, message)
+    send_sms(farmer.contact, message)
 
     return Response(obj)
 
@@ -324,7 +324,8 @@ class BidDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(['post'])
 def CreateBidView(req):
-    type = FoodGrain.objects.get(type=req.data['foodgrain'])
+    print(req.data)
+    type = FoodGrain.objects.get(type=req.data['foodgrain'].lower())
     quantity = req.data['quantity']
     description = req.data['description']
     deadline = datetime.datetime(2020,2,2)
@@ -372,6 +373,7 @@ def report_produce(request):
         produce = Produce.objects.create(farmer=farmer,type=foodgrain,grade=grade,quantity=quantity,location=location,price=price)
         produce.save()
         poduceserializer = ProduceSerializer(produce).data
+    send_sms(farmer.contact, "Your produce has been Reported")
     return Response(poduceserializer)
 
 class StorageTransactionListView(generics.ListCreateAPIView):
@@ -794,7 +796,7 @@ def ApproveBid(request, pk):
 def createBid(req):
     bid = Bid.objects.create(
         buyer=req.user,
-        type=FoodGrain.objects.get(type=req.data['foodgrain']),
+        type=FoodGrain.objects.get(type=req.data['foodgrain'].lower()),
         quantity=int(req.data['quantity']),
         description=req.data['description'],
         deadline='2020-02-01'
@@ -1090,6 +1092,12 @@ def match_otp(req, pk):
 def enter_otp(req, pk):
     return TemplateResponse(req, 'otp.html', dict({"pk":pk}))
 
-
-
+@api_view(["GET"])
+def order_details(req, pk):
+    tsale = TransactionSale.objects.get(pk = pk)
+    obj = tsale.order_details
+    print(obj)
+    data = OrderDetailsSerializer(obj).data
+    print(data)
+    return Response(data)
 
